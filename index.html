@@ -1857,13 +1857,15 @@ async function enviar(){
     const novasMsgs = [...hist,{role:"assistant",content:reply}];
     setState({msgs:novasMsgs, loading:false});
 
-    // Salva resposta no diário
+    // Salva resposta no diário e volta para tela do diário
     if(state.modulo?.id === "diario" && state.diarioId){
       const notasAtuais = carregarNotas();
       const idx = notasAtuais.findIndex(x => x.id === state.diarioId);
       if(idx !== -1){ notasAtuais[idx].resposta = reply; }
       localStorage.setItem("florzinha_diario", JSON.stringify(notasAtuais));
       state.diarioId = null;
+      setState({msgs:novasMsgs, loading:false, tela:"diario", modulo:null});
+      return;
     }
 
     // Auto-salvar histórico de relacionamentos
