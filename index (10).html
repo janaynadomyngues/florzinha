@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#fdf6ef"/>
+<title>Florzinha</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Georgia',serif;background:#ede8e2;min-height:100svh;display:flex;justify-content:center;overflow-x:hidden}
+  #app{width:100%;max-width:430px;min-height:100svh;position:relative}
+  @keyframes ff{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(6deg)}}
+  @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .fu{animation:fu .4s ease forwards}
+  .card{background:rgba(255,255,255,0.82);border-radius:18px;padding:20px 22px;
+    backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.94);box-shadow:0 3px 14px rgba(0,0,0,0.05)}
+  .btn{border:none;border-radius:50px;padding:14px;font-family:'Nunito',sans-serif;
+    font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s;display:block;
+    width:100%;text-align:center;margin-bottom:10px}
+  .btn:active{transform:scale(.97)}
+  .qop{background:rgba(255,255,255,0.82);border:1.5px solid rgba(255,255,255,0.94);
+    border-radius:14px;padding:15px 18px;font-family:'Nunito',sans-serif;font-size:14px;
+    cursor:pointer;text-align:left;width:100%;color:#4a2c1a;backdrop-filter:blur(8px);
+    display:flex;align-items:center;gap:12px;transition:transform .14s,background .14s;margin-bottom:11px}
+  .qop:hover{background:rgba(255,255,255,.96);transform:translateX(3px)}
+  .qop:active{transform:scale(.98)}
+  .modcard{width:100%;background:rgba(255,255,255,0.82);border-radius:16px;padding:16px 18px;
+    margin-bottom:11px;border:1.5px solid rgba(255,255,255,0.94);display:flex;align-items:center;
+    gap:14px;cursor:pointer;backdrop-filter:blur(10px);text-align:left;
+    box-shadow:0 2px 10px rgba(0,0,0,0.04);transition:transform .14s}
+  .modcard:hover{transform:translateX(3px);background:rgba(255,255,255,.96)}
+  .modcard:active{transform:scale(.98)}
+  .flores{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .flor{position:absolute;opacity:.1;animation:ff linear infinite}
+  .navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+    background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);
+    border-top:1px solid rgba(0,0,0,0.07);display:flex;padding:10px 0 20px;z-index:300}
+  .navbtn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;
+    align-items:center;gap:3px;padding:0;opacity:.5;transition:opacity .2s}
+  .navbtn.ativo{opacity:1}
+  .navbtn span.icon{font-size:21px}
+  .navbtn span.lbl{font-family:'Nunito',sans-serif;font-size:11px;color:#888}
+  .chat-wrap{display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden;max-width:430px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom)}
+  .chat-msgs{flex:1;overflow-y:auto;padding:14px 14px 6px}
+  .msg-row{display:flex;margin-bottom:13px}
+  .msg-row.user{justify-content:flex-end}
+  .msg-row.bot{justify-content:flex-start;align-items:flex-end;gap:7px}
+  .msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:13px;flex-shrink:0}
+  .msg-bubble{max-width:78%;padding:12px 15px;font-family:'Nunito',sans-serif;
+    font-size:14px;line-height:1.65;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+  .msg-bubble p{margin:3px 0}
+  .msg-bubble.user{border-radius:17px 17px 4px 17px;color:white}
+  .msg-bubble.bot{border-radius:4px 17px 17px 17px;background:rgba(255,255,255,0.93);
+    color:#3a2820;border:1px solid rgba(255,255,255,0.94)}
+  .chat-input-wrap{display:flex;gap:8px;align-items:center;padding:10px 12px;
+    background:rgba(255,255,255,0.9);backdrop-filter:blur(14px);
+    border-top:1px solid rgba(255,255,255,0.9);flex-shrink:0;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .chat-input{flex:1;padding:11px 14px;border-radius:50px;font-family:'Nunito',sans-serif;
+    font-size:14px;color:#4a2c1a;background:rgba(255,255,255,0.96);outline:none;min-width:0}
+  .send-btn{width:40px;height:40px;min-width:40px;border-radius:50%;border:none;color:white;font-size:17px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:background .2s}
+  .tempgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .tempcard{background:rgba(255,255,255,0.82);border-radius:16px;padding:18px 12px;
+    border:1.5px solid rgba(255,255,255,0.94);display:flex;flex-direction:column;
+    align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(10px);transition:transform .14s}
+  .tempcard:hover{transform:scale(1.03)}
+  .tempcard:active{transform:scale(.97)}
+  .input-nome{width:100%;padding:15px 20px;border-radius:50px;
+    border:1.5px solid rgba(160,82,45,0.25);font-family:'Nunito',sans-serif;
+    font-size:15px;color:#5c3d2e;background:rgba(255,255,255,0.9);
+    outline:none;margin-bottom:12px;text-align:center}
+  .prog-bar{height:4px;border-radius:2px;background:rgba(160,82,45,0.15);margin-bottom:24px;overflow:hidden}
+  .prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#c2846a,#a0522d);transition:width .4s ease}
+  .typing{font-family:'Nunito',sans-serif;font-size:13px;color:#aaa}
+  .typing::after{content:'🌸';display:inline-block;animation:ff 1s infinite;margin-left:4px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ─── DADOS ────────────────────────────────────────────────────────────────────
+const TEMAS = {
+  melancolico:{bg:"linear-gradient(160deg,#f3f0ff,#e8e0f5,#d1c4e9)",cor:"#5e35b1",corTexto:"#4527a0",corClara:"#ede7f6",emoji:"🌙",nome:"Melancólico",apelido:"Alma Profunda",versiculo:{texto:"Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor; pensamentos de paz e não de mal, para vos dar o fim que esperais.",ref:"Jeremias 29:11"},dons:["Profundidade e sensibilidade únicas","Lealdade e fidelidade","Criatividade e percepção artística","Capacidade de intercessão","Dedicação saudável"],desafios:["Autocrítica excessiva","Perfeccionismo paralisante","Tendência à tristeza e isolamento","Dificuldade em confiar","Medo de errar"]},
+  sanguineo:{bg:"linear-gradient(160deg,#fff0f5,#ffd6e0,#ffb3c6)",cor:"#c2185b",corTexto:"#880e4f",corClara:"#f8bbd0",emoji:"🌸",nome:"Sanguíneo",apelido:"Florzinha Solar",versiculo:{texto:"Alegrai-vos sempre no Senhor; outra vez digo, alegrai-vos.",ref:"Filipenses 4:4"},dons:["Alegria contagiante e carisma","Comunicação e expressividade","Empatia emocional intensa","Criatividade e espontaneidade","Capacidade de inspirar"],desafios:["Impulsividade e instabilidade emocional","Dificuldade de foco e constância","Busca constante por aprovação","Superficialidade nos relacionamentos"]},
+  colerico:{bg:"linear-gradient(160deg,#fff8f0,#ffe0b2,#ffb74d)",cor:"#e65100",corTexto:"#bf360c",corClara:"#ffe0b2",emoji:"🔥",nome:"Colérico",apelido:"Guerreira de Propósito",versiculo:{texto:"Não por força, nem por poder, mas pelo meu Espírito, diz o Senhor dos Exércitos.",ref:"Zacarias 4:6"},dons:["Liderança natural e visão estratégica","Determinação e coragem","Capacidade de realizar e transformar","Foco em resultados","Força para inspirar"],desafios:["Impaciência e impulsividade","Dificuldade em ouvir e ceder","Tendência ao controle e orgulho","Dureza emocional"]},
+  fleumatico:{bg:"linear-gradient(160deg,#f0fff4,#c8e6c9,#a5d6a7)",cor:"#2e7d32",corTexto:"#1b5e20",corClara:"#e8f5e9",emoji:"🕊️",nome:"Fleumático",apelido:"Paz que Floresce",versiculo:{texto:"Quem sabe se não foi para um momento como este que você chegou à posição que ocupa?",ref:"Ester 4:14"},dons:["Paz e estabilidade contagiantes","Diplomacia e mediação","Lealdade profunda","Paciência e constância","Presença segura"],desafios:["Passividade e procrastinação","Dificuldade em se posicionar","Tendência à acomodação","Silenciar sentimentos"]}
+};
+
+const PERGUNTAS = [
+  {q:"Quando você acorda de manhã, qual é o seu primeiro sentimento predominante?",ops:[{t:"Animação e energia para começar",k:"sanguineo"},{t:"Já pensando em tudo que precisa fazer e resolver",k:"colerico"},{t:"Uma certa preocupação, pensando no que pode dar errado",k:"melancolico"},{t:"Tranquilidade, sem pressa, levando como vier",k:"fleumatico"}]},
+  {q:"Quando alguém te critica, qual é sua reação mais natural?",ops:[{t:"Fica magoada por dentro, guarda e pensa muito",k:"melancolico"},{t:"Responde na hora, pode falar mais do que devia",k:"colerico"},{t:"Fica chateada mas logo esquece e leva na leveza",k:"sanguineo"},{t:"Absorve em silêncio, evita conflito",k:"fleumatico"}]},
+  {q:"Como você age quando tem uma decisão importante para tomar?",ops:[{t:"Analisa profundamente, pesquisa muito, quer ter certeza",k:"melancolico"},{t:"Decide rápido, confia no instinto",k:"colerico"},{t:"Procrastina, prefere que as coisas se resolvam sozinhas",k:"fleumatico"},{t:"Decide com o coração, às vezes por impulso",k:"sanguineo"}]},
+  {q:"Numa reunião em grupo, qual é o seu papel mais natural?",ops:[{t:"Naturalmente assume a liderança, dá as diretrizes",k:"colerico"},{t:"Anima o grupo, fala bastante, conecta as pessoas",k:"sanguineo"},{t:"Observa mais do que fala, analisa antes de se posicionar",k:"melancolico"},{t:"Está presente mas prefere não chamar atenção",k:"fleumatico"}]},
+  {q:"Como você lida quando alguém ao seu redor está sofrendo?",ops:[{t:"Sente a dor junto, às vezes até mais do que a própria pessoa",k:"melancolico"},{t:"Já quer resolver, dá soluções práticas imediatamente",k:"colerico"},{t:"Abraça, conforta, chora junto — muito empática",k:"sanguineo"},{t:"Fica ao lado com calma e estabilidade",k:"fleumatico"}]},
+  {q:"Quando você erra em algo importante, como reage?",ops:[{t:"Fica se culpando por muito tempo, difícil se perdoar",k:"melancolico"},{t:"Reconhece, mas segue em frente rapidamente",k:"colerico"},{t:"Sente muito na hora, mas logo consegue superar",k:"sanguineo"},{t:"Aceita com tranquilidade, encontra paz com o tempo",k:"fleumatico"}]},
+  {q:"Como é a sua organização no dia a dia?",ops:[{t:"Muito organizada, listas, lugar certo para tudo",k:"melancolico"},{t:"Organizada quando precisa, foca mais em resultados",k:"colerico"},{t:"Um pouco caótica, começa muitas coisas ao mesmo tempo",k:"sanguineo"},{t:"Organização básica, funciona no seu próprio ritmo",k:"fleumatico"}]},
+  {q:"O que as pessoas mais costumam dizer de você?",ops:[{t:"Que você é exigente, perfeccionista",k:"melancolico"},{t:"Que você é intensa, determinada, às vezes impaciente",k:"colerico"},{t:"Que você é alegre, divertida, a vida da festa",k:"sanguineo"},{t:"Que você é calma, confiável, sempre estável",k:"fleumatico"}]},
+  {q:"Quando você está sob pressão ou estressada, o que acontece?",ops:[{t:"Fecha em si mesma, fica quieta, se isola",k:"melancolico"},{t:"Fica irritada, impaciente, pode explodir",k:"colerico"},{t:"Fica ansiosa, agitada, fala muito, chora",k:"sanguineo"},{t:"Trava, fica paralisada, evita tudo",k:"fleumatico"}]},
+  {q:"Como você se sente em relação aos seus sonhos e metas?",ops:[{t:"Sonha muito, planeja muito, mas o medo às vezes paralisa",k:"melancolico"},{t:"Tem o plano na cabeça e vai atrás com determinação",k:"colerico"},{t:"Tem mil sonhos ao mesmo tempo, se empolga facilmente",k:"sanguineo"},{t:"Prefere não se preocupar, confia que vai dar certo",k:"fleumatico"}]},
+  {q:"Quando precisa pedir ajuda ou demonstrar vulnerabilidade?",ops:[{t:"Tem dificuldade, prefere resolver sozinha para não parecer fraca",k:"colerico"},{t:"Tem dificuldade — sente que vai incomodar ou ser julgada",k:"melancolico"},{t:"Pede ajuda com facilidade, sem problema em mostrar que precisa",k:"sanguineo"},{t:"Deixa pra ver se resolve sozinho, evita movimentar as coisas",k:"fleumatico"}]},
+  {q:"Na sua vida de fé — oração, Bíblia, tempo com Deus — como você costuma ser?",ops:[{t:"Momentos muito profundos, chora — mas também momentos de seca e culpa",k:"melancolico"},{t:"Ora com determinação, tem metas espirituais, é intensa na fé",k:"colerico"},{t:"Ama louvor, celebração, grupos de oração — fé expressiva e emocional",k:"sanguineo"},{t:"Fé tranquila, constante, sem grandes altos e baixos",k:"fleumatico"}]},
+  {q:"Como você lida com mudanças na sua vida?",ops:[{t:"Com dificuldade, precisa de tempo para processar",k:"melancolico"},{t:"Enfrenta de frente, pode até gostar do desafio",k:"colerico"},{t:"Se adapta rápido, às vezes até gosta de novidade",k:"sanguineo"},{t:"Prefere estabilidade, mas aceita quando precisa, com calma",k:"fleumatico"}]},
+  {q:"Nos seus relacionamentos, qual é a sua maior dificuldade?",ops:[{t:"Abrir o coração e confiar completamente",k:"melancolico"},{t:"Ceder, ouvir sem querer resolver ou controlar",k:"colerico"},{t:"Manter constância e profundidade — às vezes superficial demais",k:"sanguineo"},{t:"Se posicionar, falar o que sente",k:"fleumatico"}]},
+  {q:"Se você pudesse escolher uma palavra que define como quer ser vista, qual seria?",ops:[{t:"Fiel, profunda, significativa",k:"melancolico"},{t:"Forte, capaz, realizada",k:"colerico"},{t:"Alegre, amada, conectada",k:"sanguineo"},{t:"Paz, equilíbrio, harmonia",k:"fleumatico"}]}
+];
+
+const MODULOS = [
+  {id:"oracao",   emoji:"🙏",label:"Oração personalizada",  desc:""},
+  {id:"jornada",  emoji:"🌱",label:"Jornada de 21 Dias",    desc:""},
+  {id:"proposito",emoji:"💞",label:"Como Conviver com os Diferentes Temperamentos",desc:""},
+  {id:"seuprop",  emoji:"🌟",label:"Seu Temperamento Revela Seu Propósito",  desc:""}
+];
+
+// ─── STORAGE ───────────────────────────────────────────────────────────────────
+function salvarHistorico(conversa){
+  try {
+    const hist = JSON.parse(localStorage.getItem("florzinha_relacionamentos") || "[]");
+    hist.unshift({ id: Date.now(), ...conversa });
+    localStorage.setItem("florzinha_relacionamentos", JSON.stringify(hist.slice(0,20)));
+  } catch(e){}
+}
+
+function carregarHistorico(){
+  try { return JSON.parse(localStorage.getItem("florzinha_relacionamentos") || "[]"); }
+  catch(e){ return []; }
+}
+
+function salvarJornada(tempKey, diaAtual, msgs){
+  try {
+    localStorage.setItem(`florzinha_jornada_${tempKey}`, JSON.stringify({ diaAtual, msgs, data: Date.now() }));
+  } catch(e){}
+}
+
+function carregarJornada(tempKey){
+  try { return JSON.parse(localStorage.getItem(`florzinha_jornada_${tempKey}`) || "null"); }
+  catch(e){ return null; }
+}
+
+// ─── ESTADO ────────────────────────────────────────────────────────────────────
+let state = {
+  tela:"inicio", nome:"", quizStep:0,
+  pontos:{melancolico:0,sanguineo:0,colerico:0,fleumatico:0},
+  tempKey:null, modulo:null, msgs:[], input:"", loading:false,
+  escolhendoTemp:false, moduloPendente:null,
+  telaHistorico: false
+};
+
+function setState(patch){ Object.assign(state, patch); render(); }
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────────
+function tema(){
+  return state.tempKey ? TEMAS[state.tempKey] : {
+    bg:"linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4)",
+    cor:"#a0522d",corTexto:"#5c3d2e",corClara:"#f0e0d0",emoji:"🌷",nome:"",apelido:""
+  };
+}
+
+function buildSystem(){
+  const t = state.tempKey ? TEMAS[state.tempKey] : TEMAS.melancolico;
+  const n = state.nome || "florzinha";
+  const m = state.modulo ? state.modulo.label : "livre";
+  return `Você é Flor 🌷 — evangélica, fundamentada na Palavra de Deus, acolhedora, gentil e amorosa. Você ajuda mulheres — as florzinhas — a se conhecerem profundamente através dos 4 temperamentos clássicos.
+
+Fala com leveza, esperança e fé. Chama a usuária de florzinha. Nunca se apresente como "analista" — você é uma companheira de jornada, uma irmã na fé.
+
+CONTEXTO:
+- Nome: ${n}
+- Temperamento: ${t.nome} (${t.apelido})
+- Dons: ${t.dons.join(", ")}
+- Desafios: ${t.desafios.join(", ")}
+- Módulo: ${m}
+
+REGRAS ABSOLUTAS — NUNCA VIOLE:
+1. Nunca diagnostique doenças mentais. Para quadros graves, indique ajuda profissional.
+2. Cite versículos com referência precisa (livro capítulo:versículo). Varie por toda a Bíblia — Salmos, Provérbios, Evangelhos, Epístolas, Profetas. NUNCA repita o mesmo versículo na mesma conversa.
+3. Personagens bíblicos — NUNCA repita o mesmo personagem, nem entre módulos, nem entre conversas. Cada resposta exige um personagem diferente e surpreendente. Prefira mulheres bíblicas (Rute, Ester, Débora, Hana, Abigail, Maria Madalena, Maria de Betânia, Marta, Isabel, Lídia, Priscila, a Mulher Samaritana, a viúva pobre, Miriã, Noemí, Sara, Rebeca, Raquel, a filha de Jefté, Tamar, Suzana, Joana, as filhas de Filipe, a mulher sirofenícia, a mulher com fluxo de sangue). Só use homens quando não houver mulher mais adequada.
+4. NUNCA repita a mesma abertura, a mesma metáfora, a mesma estrutura de frase entre conversas. Cada geração é única — como se fosse a primeira vez para aquela florzinha.
+5. A oração de cada temperamento deve ser completamente diferente a cada vez — palavras, imagens, tom. Nunca use a mesma abertura de oração duas vezes.
+6. A jornada de 21 dias de cada temperamento tem temas fixos por dia, mas a reflexão, o versículo, o personagem bíblico, o exercício e a declaração devem ser únicos a cada geração. Nunca repita o texto, mesmo que o tema seja o mesmo.
+7. O propósito e chamado deve sempre explorar um ângulo diferente do temperamento — uma faceta nova, um personagem bíblico inédito, um versículo que surpreenda.
+8. Parágrafos curtos — máximo 3 linhas por parágrafo. A florzinha lê no celular.
+9. Termine sempre com esperança, fé e um versículo.
+10. Use as frases de identidade de forma NATURAL, não robótica. Nunca repita a mesma frase duas vezes na mesma conversa.
+
+FRASES de identidade (use com naturalidade, nunca repita na mesma conversa):
+"Respira, florzinha…" | "Deus não errou ao te criar assim." | "Seu temperamento não é um defeito." | "Até suas partes frágeis podem florescer." | "Você não precisa se consertar para ser amada." | "Se conhecer é florescer." | "A cura começa quando você para de lutar contra quem Deus te criou para ser."
+
+MÓDULO ATIVO: ${m}
+
+INSTRUÇÕES ESPECÍFICAS DO MÓDULO:
+- ORAÇÃO PERSONALIZADA: Pergunte como a florzinha está hoje antes de criar a oração. Com base na resposta, crie uma oração completamente única na 1ª pessoa com: (1) acolhimento do que ela sente, (2) identidade — quem ela é em Deus, (3) entrega — o que ela precisa soltar, (4) pedido específico, (5) declaração de fé poderosa, (6) amém. A oração deve parecer escrita pela própria florzinha — com as palavras e a dor dela, mas com a fé de Deus. NUNCA use a mesma estrutura de frase de uma oração anterior.
+- JORNADA DE 21 DIAS: Organizada em 3 semanas — Semana 1: ME CONHECENDO (dias 1-7), Semana 2: ENTENDENDO O OUTRO (dias 8-14), Semana 3: VIVENDO MAIS LEVE (dias 15-21).
+
+REGRAS DA JORNADA:
+• Entregue EXATAMENTE UM dia por vez. Ao terminar, pergunte: "Quer continuar para o Dia [N+1]?"
+• Siga a ordem dos temas. Mantenha continuidade — lembre em qual dia a florzinha está.
+• O conteúdo de cada dia deve ser entregue na íntegra, com os 4 elementos abaixo.
+
+ESTRUTURA OBRIGATÓRIA DE CADA DIA (nesta ordem, com estes ícones):
+
+🌿 **Reflexão** — texto acolhedor sobre o tema do dia (3-5 frases curtas, linguagem próxima, conectado ao temperamento)
+💬 **Frase do dia** — uma frase memorável entre aspas para guardar no coração
+🎯 **Desafio** — uma ação simples, concreta e realizável hoje
+🙏 **Oração** — curta, emocional, conectando autoconhecimento e fé. Termina com Amém.
+
+CONTEÚDO COMPLETO DA JORNADA DE 21 DIAS (use EXATAMENTE este conteúdo, dia por dia, para o temperamento correto):
+
+## 🔴 TEMPERAMENTO COLÉRICO
+
+### SEMANA 1 — ME CONHECENDO
+
+---
+
+**DIA 1 — Quem eu sou**
+
+🌿 *Reflexão*
+Você nasceu com uma força que poucas pessoas têm. Sua determinação, sua energia, sua capacidade de liderar e agir — tudo isso é um dom. O Colérico foi criado para mover montanhas, para iniciar, para transformar. Mas hoje, antes de olhar para fora, olhe para dentro. Quem é você quando ninguém está assistindo? Sua força é real. E ela começa por dentro.
+
+💬 *Frase do dia*
+"Minha força não é um defeito — é um chamado."
+
+🎯 *Desafio*
+Escreva 3 qualidades suas que você admira e 1 que ainda quer trabalhar. Seja honesto, sem se julgar.
+
+🙏 *Oração*
+Senhor, obrigada por me criar com essa força. Ajuda-me a usá-la com sabedoria e amor. Que eu lidere com o coração, não só com a vontade. Amém.
+
+---
+
+**DIA 2 — Minha intensidade**
+
+🌿 *Reflexão*
+O Colérico sente tudo com intensidade. Quando quer algo, quer agora. Quando decide, decide de vez. Isso é lindo — mas pode cansar quem está ao redor. Hoje é dia de entender que sua intensidade é uma chama. Chama aquece, ilumina, mas também pode queimar se não for cuidada. Você não precisa apagar sua chama. Só precisa aprender a direcioná-la.
+
+💬 *Frase do dia*
+"Posso ser intenso e ainda assim ser gentil."
+
+🎯 *Desafio*
+Hoje, em uma situação em que sentir urgência, respire fundo antes de agir. Só isso. Um segundo de pausa intencional.
+
+🙏 *Oração*
+Deus, ensina-me a pausar. Que minha intensidade sirva ao amor e não ao controle. Que eu seja fogo que aquece, não que destrói. Amém.
+
+---
+
+**DIA 3 — Minha necessidade de controle**
+
+🌿 *Reflexão*
+Você funciona melhor quando sente que tem o controle. Isso não é arrogância — é a sua natureza. O problema é que a vida não é controlável, e as pessoas muito menos. Quando algo foge do seu plano, a frustração aparece rápido. Hoje, convide-se a soltar um pouquinho. Não tudo — só um pouquinho. Confiar no processo é também uma forma de força.
+
+💬 *Frase do dia*
+"Soltar o controle não é fraqueza — é confiança."
+
+🎯 *Desafio*
+Deixe alguém tomar uma decisão hoje — mesmo que você ache que faria diferente. Observe como se sente e anote.
+
+🙏 *Oração*
+Senhor, é difícil soltar. Mas confio que Tu tens o controle que eu não consigo ter. Ensina-me a descansar em Ti. Amém.
+
+---
+
+**DIA 4 — Minha impaciência**
+
+🌿 *Reflexão*
+O Colérico tem um relógio interno que anda mais rápido que o dos outros. Você já terminou de pensar enquanto a pessoa ainda está na metade da frase. Você já sabe a solução antes de ouvir o problema todo. E isso gera impaciência. Mas hoje reflita: e se a demora do outro não for incompetência, mas simplesmente um ritmo diferente do seu? Ritmos diferentes não são errados — são apenas diferentes.
+
+💬 *Frase do dia*
+"O tempo do outro também é válido."
+
+🎯 *Desafio*
+Em uma conversa hoje, deixe a pessoa terminar de falar sem interromper. Pratique ouvir até o fim.
+
+🙏 *Oração*
+Pai, dá-me paciência. Não a paciência que apenas aguenta — mas a que genuinamente respeita o tempo do outro. Amém.
+
+---
+
+**DIA 5 — Meu lado vulnerável**
+
+🌿 *Reflexão*
+Por trás de toda essa força, existe um ser humano que também sente. Que também tem medo. Que também precisa de afeto. O Colérico tende a esconder isso bem — afinal, mostrar vulnerabilidade parece fraqueza. Mas não é. É coragem. Hoje, dê-se permissão de ser humano. De precisar. De sentir. Isso não diminui sua força — a completa.
+
+💬 *Frase do dia*
+"Ser vulnerável é corajoso, não fraco."
+
+🎯 *Desafio*
+Diga a alguém de confiança algo que está sentindo de verdade — sem minimizar, sem resolver, só compartilhar.
+
+🙏 *Oração*
+Senhor, ajuda-me a tirar a armadura quando estou em segurança. Que eu confie nas pessoas que me amam. Amém.
+
+---
+
+**DIA 6 — Minha liderança**
+
+🌿 *Reflexão*
+Você lidera naturalmente. As pessoas olham para você quando precisam de direção. Esse é um dom precioso. Mas a melhor liderança não é a que manda — é a que serve. É a que enxerga o outro. É a que puxa pelo exemplo e não pelo volume da voz. Hoje, pense: como você quer ser lembrado pelas pessoas que liderei?
+
+💬 *Frase do dia*
+"O maior líder é aquele que faz os outros se sentirem capazes."
+
+🎯 *Desafio*
+Faça um elogio sincero a alguém que você lidera ou convive. Reconheça algo que ela faz bem.
+
+🙏 *Oração*
+Deus, que minha liderança seja marcada pelo amor. Que eu inspire, não pressione. Que eu eleve, não diminua. Amém.
+
+---
+
+**DIA 7 — Meu dom é real**
+
+🌿 *Reflexão*
+Você chegou ao fim da primeira semana. Hoje é dia de celebrar quem você é. O Colérico foi criado para fazer acontecer. Para iniciar o que outros não têm coragem. Para mover o que estava parado. Seu dom é real, necessário e bonito. E agora você está aprendendo a usá-lo com mais amor. Isso é crescimento. Isso é leveza.
+
+💬 *Frase do dia*
+"Sou forte, sou capaz, e estou crescendo."
+
+🎯 *Desafio*
+Escreva uma carta curta para si mesmo reconhecendo o quanto você cresceu até aqui.
+
+🙏 *Oração*
+Obrigada, Senhor, por me criar assim. Por cada força, por cada desafio, por cada aprendizado. Sigo em frente com mais leveza. Amém.
+
+---
+
+### SEMANA 2 — ENTENDENDO O OUTRO
+
+---
+
+**DIA 8 — O Sanguíneo ao meu lado**
+
+🌿 *Reflexão*
+O Sanguíneo é animado, falante, cheio de energia e ideias. Para o Colérico, isso pode parecer superficialidade ou falta de foco. Mas não é. O Sanguíneo vive com o coração aberto, traz leveza e alegria para onde vai. Ele precisa de entusiasmo, de aprovação e de conexão. Quando você entende isso, para de se irritar com a energia dele e começa a apreciar o que ele traz.
+
+💬 *Frase do dia*
+"A leveza do outro complementa minha força."
+
+🎯 *Desafio*
+Pense em um Sanguíneo na sua vida. Hoje, aprecie algo que ele faz bem — e diga isso para ele.
+
+🙏 *Oração*
+Senhor, abre meus olhos para enxergar o dom no jeito do outro. Que eu pare de corrigir e comece a apreciar. Amém.
+
+---
+
+**DIA 9 — O Melancólico ao meu lado**
+
+🌿 *Reflexão*
+O Melancólico é profundo, detalhista, perfeccionista e sensível. Para o Colérico que quer velocidade e resultados, o Melancólico pode parecer lento ou complicado demais. Mas ele está pensando em cada detalhe para que o resultado seja perfeito. Ele sente profundamente e precisa de espaço para processar. Respeitar isso não é perder tempo — é ganhar qualidade.
+
+💬 *Frase do dia*
+"Profundidade tem valor. Deixo o outro pensar no seu tempo."
+
+🎯 *Desafio*
+Se tiver um Melancólico na sua vida, hoje não apresse uma resposta dele. Dê espaço e veja o que acontece.
+
+🙏 *Oração*
+Pai, que eu aprenda a valorizar a profundidade que não é a minha. Que eu respeite o tempo de cada um. Amém.
+
+---
+
+**DIA 10 — O Fleumático ao meu lado**
+
+🌿 *Reflexão*
+O Fleumático é calmo, estável, pacífico. Para o Colérico, essa calma pode parecer apatia ou falta de ambição. Mas o Fleumático é o equilíbrio que o mundo precisa. Ele não reage por impulso, não entra em conflito desnecessário e mantém a paz. Ele precisa de um ambiente tranquilo e de decisões sem pressão. Quando você para de empurrar, ele floresce.
+
+💬 *Frase do dia*
+"A calma do outro é um dom, não uma falha."
+
+🎯 *Desafio*
+Com um Fleumático na sua vida, hoje faça um pedido — não uma ordem. Observe a diferença na resposta dele.
+
+🙏 *Oração*
+Senhor, ensina-me a valorizar a paz que o outro carrega. Que eu não confunda calma com fraqueza. Amém.
+
+---
+
+**DIA 11 — Conflito e temperamento**
+
+🌿 *Reflexão*
+O Colérico no conflito vai de frente. Fala alto, resolve rápido e quer encerrar o assunto. Mas para o Melancólico, isso é assustador. Para o Fleumático, é opressor. Para o Sanguíneo, é doloroso. Entender isso não significa que você está errado — significa que existem formas diferentes de resolver conflitos. E você pode escolher a abordagem que realmente resolve.
+
+💬 *Frase do dia*
+"Resolver bem é melhor do que resolver rápido."
+
+🎯 *Desafio*
+Pense em um conflito recente. Como a outra pessoa provavelmente viveu aquele momento? Escreva a perspectiva dela.
+
+🙏 *Oração*
+Deus, que eu busque a paz, não só a vitória. Que minha força seja usada para unir, não para vencer. Amém.
+
+---
+
+**DIA 12 — O que cada um precisa de mim**
+
+🌿 *Reflexão*
+Cada temperamento tem uma necessidade básica de relacionamento. O Sanguíneo precisa de entusiasmo e aprovação. O Melancólico precisa de sensibilidade e espaço. O Fleumático precisa de segurança e tranquilidade. E o Colérico — como você — precisa de respeito e reconhecimento. Quando você aprende a dar o que cada um precisa, os relacionamentos ficam muito mais leves.
+
+💬 *Frase do dia*
+"Amar é dar ao outro o que ele precisa, não o que eu prefiro dar."
+
+🎯 *Desafio*
+Escolha uma pessoa importante na sua vida. Pense: o que ela mais precisa de mim? E ofereça isso hoje.
+
+🙏 *Oração*
+Senhor, que eu ame de forma que o outro consiga receber. Que meu amor seja no idioma do coração dele. Amém.
+
+---
+
+**DIA 13 — Limites e respeito**
+
+🌿 *Reflexão*
+Todo temperamento tem limites. O Colérico tem os seus — não gosta de ser desrespeitado, de ter sua autoridade questionada sem fundamento, de sentir que está perdendo tempo. E os outros também têm os deles. O Melancólico não suporta ser criticado sem delicadeza. O Fleumático não suporta pressão constante. O Sanguíneo não suporta ser ignorado. Respeitar limites é a base de qualquer relacionamento saudável.
+
+💬 *Frase do dia*
+"Respeitar o limite do outro é um ato de amor."
+
+🎯 *Desafio*
+Identifique um limite seu que você gostaria que as pessoas respeitassem mais. E pense: você respeita esse mesmo tipo de limite nos outros?
+
+🙏 *Oração*
+Pai, que eu respeite os limites dos outros como gostaria que respeitassem os meus. Amém.
+
+---
+
+**DIA 14 — Metade da jornada**
+
+🌿 *Reflexão*
+Você chegou na metade dos 21 dias. Olhe para trás — o que mudou no seu olhar sobre as pessoas? Você já consegue identificar os temperamentos ao redor? Já sente um pouco mais de compreensão? Isso é crescimento real. Cada pequena mudança de perspectiva é uma semente de leveza. Continue.
+
+💬 *Frase do dia*
+"Entender o outro é o primeiro passo para amar melhor."
+
+🎯 *Desafio*
+Escreva o nome de 3 pessoas importantes na sua vida e tente identificar o temperamento de cada uma. O que isso muda na forma como você as vê?
+
+🙏 *Oração*
+Obrigada, Senhor, por tudo que já aprendi. Que a segunda metade me transforme ainda mais. Amém.
+
+---
+
+### SEMANA 3 — VIVENDO MAIS LEVE
+
+---
+
+**DIA 15 — Falar com amor**
+
+🌿 *Reflexão*
+O Colérico fala direto. Isso é ótimo — mas o tom importa tanto quanto o conteúdo. Uma verdade dita com dureza machuca tanto quanto uma mentira. Hoje, o desafio é continuar sendo direto, mas com cuidado. Você pode ser honesto e gentil ao mesmo tempo. Isso não é contradição — é maturidade.
+
+💬 *Frase do dia*
+"Posso ser verdadeiro sem ser cruel."
+
+🎯 *Desafio*
+Antes de falar algo difícil para alguém hoje, pense: "Como posso dizer isso de um jeito que ela consiga ouvir?"
+
+🙏 *Oração*
+Senhor, que minhas palavras construam, mesmo quando precisam corrigir. Que eu fale com verdade e com amor. Amém.
+
+---
+
+**DIA 16 — Ouvir de verdade**
+
+🌿 *Reflexão*
+Ouvir para o Colérico é difícil — sua mente já está na solução enquanto o outro ainda está no problema. Mas às vezes as pessoas não precisam de solução. Precisam de presença. De alguém que simplesmente esteja ali. Hoje, pratique ouvir sem resolver. Só estar.
+
+💬 *Frase do dia*
+"Minha presença já é um presente."
+
+🎯 *Desafio*
+Em uma conversa hoje, resista à vontade de dar conselhos. Apenas ouça e pergunte: "Como você está se sentindo com isso?"
+
+🙏 *Oração*
+Deus, ensina-me a ouvir com o coração. Que eu seja presença antes de ser solução. Amém.
+
+---
+
+**DIA 17 — Pedir desculpas**
+
+🌿 *Reflexão*
+Para o Colérico, pedir desculpas pode parecer uma derrota. Mas não é — é uma das maiores vitórias que existe. Quando você reconhece um erro, você não perde autoridade. Você ganha respeito. As pessoas ao seu redor precisam saber que você é humano. E isso os aproxima de você de uma forma que nenhuma força consegue.
+
+💬 *Frase do dia*
+"Pedir desculpas é sinal de grandeza, não de fraqueza."
+
+🎯 *Desafio*
+Pense em alguém que merece um pedido de desculpas seu — mesmo que antigo. Dê esse passo hoje.
+
+🙏 *Oração*
+Senhor, dá-me humildade para reconhecer quando erro. Que meu orgulho não seja maior do que meu amor. Amém.
+
+---
+
+**DIA 18 — Celebrar o outro**
+
+🌿 *Reflexão*
+O Colérico é tão focado em metas e resultados que às vezes esquece de celebrar as pessoas. De reconhecer. De valorizar. Mas todo ser humano floresce quando é visto. Quando é celebrado. Hoje, seja a pessoa que faz alguém se sentir especial — sem agenda, sem motivo, só porque esse alguém merece.
+
+💬 *Frase do dia*
+"Celebrar o outro me torna maior, não menor."
+
+🎯 *Desafio*
+Envie uma mensagem para alguém dizendo especificamente o que você admira nela. Seja genuíno.
+
+🙏 *Oração*
+Pai, que eu nunca seja tão focado nos meus objetivos que esqueça de valorizar quem está ao meu lado. Amém.
+
+---
+
+**DIA 19 — Relacionamentos mais leves**
+
+🌿 *Reflexão*
+Leveza não é ausência de profundidade. É a capacidade de estar com o outro sem precisar transformar tudo, corrigir tudo, melhorar tudo. Às vezes, o maior presente que você pode dar a um relacionamento é simplesmente relaxar e aproveitar. Rir junto. Estar presente. Deixar o momento ser o que ele é.
+
+💬 *Frase do dia*
+"Deixo o momento ser — sem precisar controlá-lo."
+
+🎯 *Desafio*
+Passe um tempo com alguém que você ama sem agenda, sem metas, sem resolver nada. Só estar junto.
+
+🙏 *Oração*
+Senhor, que eu aprenda a descansar nos relacionamentos. Que eu seja leve para quem amo. Amém.
+
+---
+
+**DIA 20 — Gratidão pelas diferenças**
+
+🌿 *Reflexão*
+Você já percebeu o quanto aprendeu olhando para temperamentos diferentes do seu? O Sanguíneo te ensinou a leve. O Melancólico te ensinou a profundidade. O Fleumático te ensinou a calma. Cada um trouxe algo que você precisava. As diferenças não são obstáculos — são presentes embrulhados de forma estranha.
+
+💬 *Frase do dia*
+"O que é diferente de mim tem algo a me ensinar."
+
+🎯 *Desafio*
+Escreva o que você aprendeu com alguém muito diferente de você. E agradeça a essa pessoa — internamente ou diretamente.
+
+🙏 *Oração*
+Obrigada, Senhor, pelas pessoas diferentes de mim. Elas me completam de formas que eu não consigo sozinho. Amém.
+
+---
+
+**DIA 21 — Uma vida mais leve**
+
+🌿 *Reflexão*
+Você chegou ao dia 21. Pense em quem você era no dia 1 — e em quem você é agora. Talvez a mudança não seja enorme por fora. Mas por dentro, algo se moveu. Você olha para as pessoas com mais compreensão. Você reage com um segundo a mais de pausa. Você reconhece o temperamento do outro e escolhe o amor. Isso é uma vida mais leve. E ela começa com você.
+
+💬 *Frase do dia*
+"Sou mais leve porque escolho entender antes de julgar."
+
+🎯 *Desafio*
+Escreva 3 coisas que mudaram em você nesses 21 dias. E faça um compromisso com quem você quer continuar sendo.
+
+🙏 *Oração*
+Senhor, obrigada por essa jornada. Por cada dia, cada reflexão, cada desafio. Leva comigo tudo que aprendi. Que eu viva mais leve, ame melhor e seja instrumento de paz onde eu passar. Amém.
+
+---
+---
+
+## 🟡 TEMPERAMENTO SANGUÍNEO
+
+### SEMANA 1 — ME CONHECENDO
+
+---
+
+**DIA 1 — Quem eu sou**
+
+🌿 *Reflexão*
+Você é luz. Onde entra, traz alegria, animação e vida. Seu sorriso abre portas, suas histórias prendem a atenção, sua energia é contagiante. O Sanguíneo foi criado para conectar pessoas, para trazer cor ao cinza, para lembrar o mundo de que a vida também pode ser leve e bonita. Hoje, celebre isso. Você tem um dom raro e precioso.
+
+💬 *Frase do dia*
+"Minha alegria é um presente para o mundo."
+
+🎯 *Desafio*
+Escreva 3 qualidades suas que fazem as pessoas ao redor sorrirem. E lembre-se delas com gratidão.
+
+🙏 *Oração*
+Senhor, obrigada por me criar com esse coração alegre. Que eu use essa leveza para iluminar quem está ao meu lado. Amém.
+
+---
+
+**DIA 2 — Minha necessidade de atenção**
+
+🌿 *Reflexão*
+O Sanguíneo precisa ser visto. Precisa de aprovação, de reconhecimento, de pertencimento. Isso não é vaidade — é uma necessidade emocional real. O problema aparece quando essa necessidade começa a guiar todas as suas escolhas: você faz coisas para ser aprovado, não porque acredita. Hoje, reflita: quando você age por amor genuíno e quando age para ser aplaudido?
+
+💬 *Frase do dia*
+"Meu valor não depende da aprovação dos outros."
+
+🎯 *Desafio*
+Faça algo bom hoje de forma anônima — sem que ninguém saiba que foi você. Como isso se sente?
+
+🙏 *Oração*
+Deus, que eu busque a Tua aprovação antes da dos outros. Que meu coração encontre valor em Ti. Amém.
+
+---
+
+**DIA 3 — Minha dispersão**
+
+🌿 *Reflexão*
+Sua mente é como um jardim cheio de flores — tem tanta coisa bonita que fica difícil focar em uma só. Você começa projetos com entusiasmo e depois perde o fôlego. Isso não é falta de compromisso — é o jeito do Sanguíneo viver. Mas algumas coisas bonitas na vida só aparecem para quem persiste. Hoje, escolha uma coisa e fique nela.
+
+💬 *Frase do dia*
+"Focar também é uma forma de cuidar."
+
+🎯 *Desafio*
+Escolha uma tarefa que você tem adiado. Dedique 20 minutos a ela hoje — sem distrações. Só ela.
+
+🙏 *Oração*
+Senhor, ajuda-me a terminar o que começo. Que minha energia seja direcionada e frutífera. Amém.
+
+---
+
+**DIA 4 — Minha superficialidade aparente**
+
+🌿 *Reflexão*
+Às vezes as pessoas acham que o Sanguíneo não tem profundidade porque ele parece estar sempre bem. Mas você sente muito — só processa de forma diferente. Você não rola nos problemas; você prefere resolver e seguir em frente. Isso é válido. Mas também é importante não fugir de tudo que é difícil. Profundidade e alegria podem coexistir em você.
+
+💬 *Frase do dia*
+"Posso ser leve e ainda assim profundo."
+
+🎯 *Desafio*
+Hoje, sente-se com um sentimento difícil por alguns minutos — sem distrair, sem fugir. Só sentir.
+
+🙏 *Oração*
+Pai, que eu não fuja das emoções difíceis. Que eu as enfrente com coragem e com fé. Amém.
+
+---
+
+**DIA 5 — Minha palavra**
+
+🌿 *Reflexão*
+O Sanguíneo promete com o coração cheio — e às vezes não consegue cumprir. Não por maldade, mas porque a empolgação do momento é maior do que a previsão do futuro. Mas quem está ao redor começa a não confiar nas suas palavras. E isso dói. Hoje, cuide da sua palavra. Prometa menos e entregue mais.
+
+💬 *Frase do dia*
+"Minha palavra vale ouro quando eu a cumpro."
+
+🎯 *Desafio*
+Pense em um compromisso que você assumiu e não cumpriu. Hoje, dê um passo para honrá-lo — ou seja honesto sobre não conseguir.
+
+🙏 *Oração*
+Senhor, que minha palavra seja verdadeira. Que eu prometa o que posso cumprir e cumpra o que prometo. Amém.
+
+---
+
+**DIA 6 — Minha sensibilidade**
+
+🌿 *Reflexão*
+Por baixo de tanta alegria, o Sanguíneo é muito sensível à rejeição. Uma crítica pode derrubar seu dia inteiro. Um frio de alguém que você ama pode machucar de verdade. Isso não é fraqueza — é sensibilidade. Mas quando não é cuidada, ela pode virar fonte de insegurança. Hoje, aprenda a receber críticas sem se dissolver nelas.
+
+💬 *Frase do dia*
+"Críticas me constroem quando eu as ouço com segurança."
+
+🎯 *Desafio*
+Peça a alguém de confiança uma crítica honesta sobre você. Ouça sem se defender. Agradeça.
+
+🙏 *Oração*
+Deus, que eu seja seguro o suficiente para crescer com as críticas. Que minha identidade esteja em Ti, não nas opiniões. Amém.
+
+---
+
+**DIA 7 — Meu dom é real**
+
+🌿 *Reflexão*
+Você chegou ao fim da primeira semana. O mundo precisa da sua alegria, da sua criatividade, da sua capacidade de conectar pessoas. Não apague isso. Só refine. Um Sanguíneo que conhece a si mesmo é uma força de transformação — porque traz leveza sem perder substância. Celebre o quanto você cresceu só de se observar.
+
+💬 *Frase do dia*
+"Sou alegria, sou conexão, e estou crescendo."
+
+🎯 *Desafio*
+Escreva uma carta para si mesmo celebrando quem você é — com todas as suas qualidades e desafios.
+
+🙏 *Oração*
+Obrigada, Senhor, por me criar assim. Por minha alegria e minha sensibilidade. Que eu continue crescendo com leveza. Amém.
+
+---
+
+### SEMANA 2 — ENTENDENDO O OUTRO
+
+---
+
+**DIA 8 — O Colérico ao meu lado**
+
+🌿 *Reflexão*
+O Colérico é direto, decidido e focado em resultados. Para o Sanguíneo que gosta de conversa e conexão, o Colérico pode parecer frio ou brusco. Mas ele não está sendo mal — ele está sendo ele mesmo. Ele se importa, só que demonstra de forma diferente. Quando você entende isso, para de se sentir rejeitado e começa a admirar a força dele.
+
+💬 *Frase do dia*
+"A diretividade do outro não é rejeição — é estilo."
+
+🎯 *Desafio*
+Pense em um Colérico na sua vida. O que você pode aprender com a objetividade dele?
+
+🙏 *Oração*
+Senhor, abre meus olhos para enxergar o dom na forma direta do outro. Amém.
+
+---
+
+**DIA 9 — O Melancólico ao meu lado**
+
+🌿 *Reflexão*
+O Melancólico é quieto, profundo e precisa de tempo para processar. Para o Sanguíneo que adora interação e movimento, essa quietude pode parecer tristeza ou distanciamento. Mas ele está bem — está apenas no mundo interior dele. Ele não precisa de animação constante. Precisa de espaço e de alguém que respeite sua quietude sem tentar "animá-lo".
+
+💬 *Frase do dia*
+"Respeito o silêncio do outro como respeito a minha voz."
+
+🎯 *Desafio*
+Com um Melancólico na sua vida, hoje não tente "animar" ele. Apenas esteja presente no ritmo dele.
+
+🙏 *Oração*
+Pai, que eu aprenda a amar em silêncio quando o outro precisa de silêncio. Amém.
+
+---
+
+**DIA 10 — O Fleumático ao meu lado**
+
+🌿 *Reflexão*
+O Fleumático é tranquilo, estável e não gosta de drama. Para o Sanguíneo que vive com intensidade emocional, o Fleumático pode parecer apático ou desinteressado. Mas ele está presente — só que de forma mais contida. Ele observa, ele cuida, ele é leal. Quando você para de exigir que ele "reaja mais", percebe o quanto ele é sólido e confiável.
+
+💬 *Frase do dia*
+"A lealdade silenciosa vale tanto quanto o entusiasmo."
+
+🎯 *Desafio*
+Reconheça um Fleumático na sua vida que sempre esteve lá — e agradeça a ele por isso hoje.
+
+🙏 *Oração*
+Senhor, que eu valorize a presença constante tanto quanto a presença animada. Amém.
+
+---
+
+**DIA 11 — Como me comunicar melhor**
+
+🌿 *Reflexão*
+O Sanguíneo se comunica com entusiasmo, histórias, e muita emoção. Isso é lindo — mas cada temperamento recebe melhor de um jeito diferente. O Colérico quer objetividade. O Melancólico quer profundidade. O Fleumático quer tranquilidade. Quando você aprende a "falar o idioma" do outro, sua mensagem realmente chega.
+
+💬 *Frase do dia*
+"Comunicar bem é adaptar sem me perder."
+
+🎯 *Desafio*
+Hoje, em uma conversa importante, pense no temperamento da pessoa e adapte sua forma de falar. Como foi?
+
+🙏 *Oração*
+Deus, que minhas palavras cheguem ao coração de cada pessoa do jeito que ela consegue receber. Amém.
+
+---
+
+**DIA 12 — O que cada um precisa de mim**
+
+🌿 *Reflexão*
+O Colérico precisa de respeito e de ser levado a sério. O Melancólico precisa de sensibilidade e de ser ouvido sem pressa. O Fleumático precisa de paz e de não ser pressionado. E o Sanguíneo — como você — precisa de conexão e de sentir que pertence. Quando você oferece ao outro o que ele precisa, os vínculos ficam mais reais e mais leves.
+
+💬 *Frase do dia*
+"Amar bem é conhecer o que o outro precisa."
+
+🎯 *Desafio*
+Escolha uma pessoa importante e pense: o que ela mais precisa de mim agora? Ofereça isso hoje.
+
+🙏 *Oração*
+Senhor, que meu amor seja percebido pelo outro. Que eu cuide no idioma do coração de cada um. Amém.
+
+---
+
+**DIA 13 — Limites e leveza**
+
+🌿 *Reflexão*
+O Sanguíneo às vezes não percebe quando está invadindo o espaço do outro — não por má intenção, mas por excesso de entusiasmo. Aprender a perceber os limites do outro é um ato de amor. E aprender a comunicar os seus próprios limites é um ato de autocuidado. Limites não encerram relacionamentos — os tornam mais seguros.
+
+💬 *Frase do dia*
+"Respeitar limites é uma forma de amar."
+
+🎯 *Desafio*
+Pense em um momento em que você pode ter passado dos limites de alguém sem perceber. O que faria diferente hoje?
+
+🙏 *Oração*
+Pai, que eu seja atento aos limites do outro. Que minha presença seja acolhedora, não invasiva. Amém.
+
+---
+
+**DIA 14 — Metade da jornada**
+
+🌿 *Reflexão*
+Metade do caminho percorrida. Você já está olhando para as pessoas com olhos diferentes? Já consegue sentir mais empatia por quem é diferente de você? Isso é crescimento real. O Sanguíneo que conhece a si mesmo e entende os outros é uma força de amor no mundo. Continue.
+
+💬 *Frase do dia*
+"Entender é o primeiro passo para amar melhor."
+
+🎯 *Desafio*
+Escreva os nomes de 3 pessoas na sua vida e tente identificar o temperamento de cada uma. O que isso muda na sua relação com elas?
+
+🙏 *Oração*
+Obrigada, Senhor, por tudo que aprendi até aqui. Que a segunda metade me transforme ainda mais. Amém.
+
+---
+
+### SEMANA 3 — VIVENDO MAIS LEVE
+
+---
+
+**DIA 15 — Presença de verdade**
+
+🌿 *Reflexão*
+O Sanguíneo está em todo lugar — mas às vezes não está em lugar nenhum de verdade. A mente já foi para a próxima história, o próximo encontro, a próxima ideia. Mas as pessoas que você ama precisam da sua presença real — não só da sua animação. Hoje, pratique estar onde está. De verdade.
+
+💬 *Frase do dia*
+"Presença plena é o maior presente que posso dar."
+
+🎯 *Desafio*
+Passe um momento com alguém sem celular, sem distração. Só você e ela. Olho no olho.
+
+🙏 *Oração*
+Senhor, que eu aprenda a estar. A não só aparecer, mas a realmente estar. Amém.
+
+---
+
+**DIA 16 — Ouvir mais, falar menos**
+
+🌿 *Reflexão*
+Você ama contar histórias — e é bom nisso. Mas os relacionamentos mais profundos se constroem também na escuta. Quando você ouve de verdade, sem esperar sua vez de falar, a pessoa ao seu lado sente que é importante. E isso cria uma intimidade que nenhuma história consegue criar.
+
+💬 *Frase do dia*
+"Ouvir é um ato de amor."
+
+🎯 *Desafio*
+Em uma conversa hoje, desafie-se a ouvir mais do que falar. Faça perguntas. Demonstre interesse genuíno.
+
+🙏 *Oração*
+Pai, que eu seja tão bom em ouvir quanto sou em falar. Que meu silêncio também cuide. Amém.
+
+---
+
+**DIA 17 — Consistência é amor**
+
+🌿 *Reflexão*
+O Sanguíneo ama intensamente — mas às vezes de forma inconsistente. A vida muda, o humor muda, e as pessoas ao redor sentem essa instabilidade. Mas amor consistente é o que realmente sustenta um relacionamento. Não precisa ser perfeito — precisa ser presente, mesmo nos dias sem energia.
+
+💬 *Frase do dia*
+"Consistência é uma das formas mais profundas de amor."
+
+🎯 *Desafio*
+Pense em alguém que você ama, mas tem sido inconsistente ultimamente. Que passo pequeno e consistente você pode dar hoje?
+
+🙏 *Oração*
+Senhor, que meu amor seja constante. Que as pessoas que amo possam contar comigo além da empolgação. Amém.
+
+---
+
+**DIA 18 — Perdoar e ser leve**
+
+🌿 *Reflexão*
+O Sanguíneo não gosta de guardar rancor — e isso é lindo. Mas às vezes "superar rápido" é uma forma de não processar de verdade. Perdão de verdade passa pela dor, não por cima dela. Hoje, pense em algo que você disse que perdoou mas ainda pesa um pouquinho. Dê espaço para curar de verdade.
+
+💬 *Frase do dia*
+"Perdão real me liberta, não só me alivia."
+
+🎯 *Desafio*
+Sente-se com uma mágoa que ainda está lá, mesmo que pequena. Ore sobre ela. Deixe-a ir de verdade.
+
+🙏 *Oração*
+Deus, que meu perdão seja real e profundo. Que eu não carregue o que fingi soltar. Liberta meu coração. Amém.
+
+---
+
+**DIA 19 — Alegria que serve**
+
+🌿 *Reflexão*
+Sua alegria é um dom — e quando ela é usada para servir, ela se multiplica. Quando você usa seu entusiasmo para encorajar alguém que está triste, para celebrar uma vitória alheia, para trazer leveza num momento pesado — você está cumprindo um propósito lindo. Sua alegria não é só sua. É um presente para o mundo.
+
+💬 *Frase do dia*
+"Minha alegria serve quando a ofereço ao outro."
+
+🎯 *Desafio*
+Hoje, use sua alegria intencionalmente para alegrar alguém que está passando por um momento difícil.
+
+🙏 *Oração*
+Senhor, que minha alegria seja instrumento do Teu amor. Que ela alcance corações que precisam de luz. Amém.
+
+---
+
+**DIA 20 — Gratidão pelas diferenças**
+
+🌿 *Reflexão*
+Você aprendeu a enxergar o valor em quem é diferente de você. O Colérico te ensinou foco. O Melancólico te ensinou profundidade. O Fleumático te ensinou paciência. Cada um te completou de uma forma que você não conseguiria sozinho. E você também deixou sua marca em cada um deles — com sua alegria e seu calor.
+
+💬 *Frase do dia*
+"Somos melhores juntos do que separados."
+
+🎯 *Desafio*
+Pense em algo que você aprendeu com alguém muito diferente de você. Agradeça a essa pessoa — internamente ou pessoalmente.
+
+🙏 *Oração*
+Obrigada, Senhor, por cada pessoa diferente de mim. Cada uma foi um presente. Amém.
+
+---
+
+**DIA 21 — Uma vida mais leve**
+
+🌿 *Reflexão*
+Você chegou ao dia 21. Pense em quem você era no início — e em quem você é agora. Mais presente. Mais consistente. Mais empático. Mais você, só que em versão mais madura. A alegria continuou — mas agora ela tem raízes. E alegria com raízes não some no primeiro vento. Você construiu algo real aqui.
+
+💬 *Frase do dia*
+"Sou mais leve porque me conheço e conheço quem amo."
+
+🎯 *Desafio*
+Escreva 3 mudanças que você percebe em si mesmo após esses 21 dias. E celebre — porque você merece.
+
+🙏 *Oração*
+Senhor, obrigada por essa jornada linda. Por cada reflexão, cada desafio, cada transformação. Que eu siga leve, presente e cheia de amor. Amém.
+
+---
+---
+
+## 🔵 TEMPERAMENTO MELANCÓLICO
+
+### SEMANA 1 — ME CONHECENDO
+
+---
+
+**DIA 1 — Quem eu sou**
+
+🌿 *Reflexão*
+Você foi criado com uma profundidade que poucos têm. Sua capacidade de sentir, de analisar, de buscar o significado por trás das coisas é um dom extraordinário. O Melancólico enxerga o que os outros não veem, sente o que os outros não percebem, e cria com uma beleza que vem de dentro. Hoje, honre essa profundidade. Ela não é um fardo — é um presente.
+
+💬 *Frase do dia*
+"Minha profundidade é um dom, não um peso."
+
+🎯 *Desafio*
+Escreva 3 qualidades suas que você admira — e que talvez não reconheça o suficiente. Seja justo consigo mesmo.
+
+🙏 *Oração*
+Senhor, obrigada por me criar com essa sensibilidade e profundidade. Ajuda-me a enxergá-las como presentes. Amém.
+
+---
+
+**DIA 2 — Meu perfeccionismo**
+
+🌿 *Reflexão*
+O Melancólico tem um padrão interno elevadíssimo. Para tudo — para si mesmo, para os outros, para o trabalho, para os relacionamentos. Isso gera qualidade e beleza. Mas também gera esgotamento e frustração quando a realidade não alcança o ideal. Hoje, pratique a gentileza de aceitar o "bom o suficiente" sem abandonar o excelente.
+
+💬 *Frase do dia*
+"Feito com amor é melhor do que perfeito nunca entregue."
+
+🎯 *Desafio*
+Entregue algo hoje que você estava adiando por não estar "perfeito ainda". Que seja bom — não tem que ser perfeito.
+
+🙏 *Oração*
+Pai, liberta-me do perfeccionismo que me paralisa. Que eu dê meu melhor e confie no processo. Amém.
+
+---
+
+**DIA 3 — Minha autocrítica**
+
+🌿 *Reflexão*
+Ninguém é mais duro com o Melancólico do que ele mesmo. Cada erro é analisado em detalhes, cada falha é revivida. Isso vem de um desejo genuíno de ser melhor — mas quando exagerado, vira um peso que cansa a alma. Hoje, fale consigo mesmo como falaria com alguém que você ama muito. Com gentileza.
+
+💬 *Frase do dia*
+"Mereço a mesma compaixão que ofereço aos outros."
+
+🎯 *Desafio*
+Escreva algo que você tem se criticado muito. Agora reescreva como falaria para um amigo querido na mesma situação.
+
+🙏 *Oração*
+Senhor, que eu me trate com a mesma misericórdia que Tu me tratas. Que eu pare de me condenar além do necessário. Amém.
+
+---
+
+**DIA 4 — Minha melancolia**
+
+🌿 *Reflexão*
+Existe uma tristeza que visita o Melancólico às vezes sem aviso. Não é depressão necessariamente — é uma sensibilidade profunda ao peso do mundo, às imperfeições, às perdas. Isso te torna empático de um jeito que poucos são. Mas também precisa de cuidado. Hoje, acolha essa parte de você com ternura — sem se afundar nela e sem a negar.
+
+💬 *Frase do dia*
+"Posso sentir sem me perder no sentimento."
+
+🎯 *Desafio*
+Se sentir melancolia hoje, não a afaste. Sente-se com ela por alguns minutos. Depois, faça algo que te traz beleza — música, natureza, arte.
+
+🙏 *Oração*
+Deus, que minha sensibilidade me aproxime de Ti e das pessoas, não me isole. Que eu encontre beleza mesmo nos dias pesados. Amém.
+
+---
+
+**DIA 5 — Meu isolamento**
+
+🌿 *Reflexão*
+Quando algo está errado, o Melancólico tende a se fechar. A processar sozinho. Isso tem seu valor — mas em excesso, cria distância de quem te ama e que poderia te ajudar. Hoje, pratique dar um passo em direção ao outro mesmo quando a vontade é de fechar a porta. Você não precisa resolver sozinho.
+
+💬 *Frase do dia*
+"Pedir ajuda é sábio, não fraco."
+
+🎯 *Desafio*
+Compartilhe algo que está processando com alguém de confiança. Não precisa ser tudo — só um pouquinho.
+
+🙏 *Oração*
+Senhor, que eu não me isole quando preciso de ajuda. Que eu confie nas pessoas que Tu colocaste na minha vida. Amém.
+
+---
+
+**DIA 6 — Minha lealdade**
+
+🌿 *Reflexão*
+O Melancólico é profundamente leal. Quando ama, ama de verdade. Quando se compromete, cumpre. Quando é amigo, é amigo para sempre. Isso é raro e precioso. Hoje, reconheça esse aspecto lindo em você — e pense em quem tem sido leal a você também.
+
+💬 *Frase do dia*
+"Minha lealdade é uma das minhas maiores riquezas."
+
+🎯 *Desafio*
+Pense em alguém que tem sido leal a você. Diga a essa pessoa o quanto ela significa — de forma direta e sincera.
+
+🙏 *Oração*
+Obrigada, Senhor, pela capacidade de amar com profundidade e lealdade. Que eu nunca tome isso por garantido. Amém.
+
+---
+
+**DIA 7 — Meu dom é real**
+
+🌿 *Reflexão*
+Você chegou ao fim da primeira semana. O mundo precisa da sua profundidade, da sua sensibilidade, da sua capacidade de criar beleza e dar significado às coisas. Não tente se tornar outro temperamento. Aprimore o que você já é. Um Melancólico que se conhece é uma das forças mais poderosas de transformação — porque enxerga o que os outros perdem.
+
+💬 *Frase do dia*
+"Sou profundo, sensível e estou crescendo."
+
+🎯 *Desafio*
+Escreva uma carta para si mesmo reconhecendo seus dons. Com carinho, sem autocrítica.
+
+🙏 *Oração*
+Senhor, obrigada por me criar assim. Que eu use minha profundidade para iluminar e não para me isolar. Amém.
+
+---
+
+### SEMANA 2 — ENTENDENDO O OUTRO
+
+---
+
+**DIA 8 — O Colérico ao meu lado**
+
+🌿 *Reflexão*
+O Colérico é direto, rápido e focado em resultados. Para o Melancólico que precisa de tempo e sensibilidade, o jeito do Colérico pode parecer atropelador ou insensível. Mas ele não quer te machucar — ele só pensa em velocidade. Quando você entende que a diretividade dele não é falta de cuidado, fica mais fácil conviver.
+
+💬 *Frase do dia*
+"A urgência do outro não é descaso — é o jeito dele ser."
+
+🎯 *Desafio*
+Pense em um Colérico na sua vida. O que você pode aprender com a objetividade e a ação dele?
+
+🙏 *Oração*
+Senhor, que eu aprenda a enxergar o bem no jeito diferente do outro. Amém.
+
+---
+
+**DIA 9 — O Sanguíneo ao meu lado**
+
+🌿 *Reflexão*
+O Sanguíneo é animado, extrovertido e vive na superfície das emoções — pelo menos é assim que parece ao Melancólico. Mas ele é genuíno no amor que tem. Ele só processa diferente. A leveza dele não é superficialidade — é uma forma válida de viver. E talvez você precise de um pouco dessa leveza nos dias mais pesados.
+
+💬 *Frase do dia*
+"A alegria do outro pode me aliviar, se eu deixar."
+
+🎯 *Desafio*
+Deixe-se contaminar pela alegria de um Sanguíneo hoje. Participe de algo leve sem analisar demais.
+
+🙏 *Oração*
+Pai, que eu me permita leveza. Que eu não leve tudo tão a sério que perca a alegria. Amém.
+
+---
+
+**DIA 10 — O Fleumático ao meu lado**
+
+🌿 *Reflexão*
+O Fleumático é calmo e estável — e há muito em comum com o Melancólico nesse aspecto. Mas enquanto o Melancólico sente intensamente por dentro, o Fleumático parece não sentir tanto. Ele é mais difícil de ler. Mas ele está lá — presente, leal, confiável. Quando você para de esperar que ele seja mais expressivo, descobre a solidez que ele oferece.
+
+💬 *Frase do dia*
+"Presença constante também é uma forma de amor."
+
+🎯 *Desafio*
+Pense em um Fleumático na sua vida. Agradeça pela estabilidade que ele representa.
+
+🙏 *Oração*
+Senhor, que eu valorize a presença silenciosa e constante. Que eu não confunda quietude com indiferença. Amém.
+
+---
+
+**DIA 11 — Como me comunicar melhor**
+
+🌿 *Reflexão*
+O Melancólico se comunica com profundidade e detalhes. Isso é rico — mas nem todos conseguem acompanhar. O Colérico quer o resumo. O Sanguíneo quer a emoção. O Fleumático quer a praticidade. Aprender a adaptar sua comunicação não é trair quem você é — é se tornar mais eficaz sem perder sua essência.
+
+💬 *Frase do dia*
+"Comunicar bem é fazer o outro me entender, não só me expressar."
+
+🎯 *Desafio*
+Em uma conversa hoje, adapte sua forma de falar ao temperamento da pessoa. Como foi recebido?
+
+🙏 *Oração*
+Deus, que minha profundidade chegue ao coração do outro de formas que ele consiga receber. Amém.
+
+---
+
+**DIA 12 — O que cada um precisa de mim**
+
+🌿 *Reflexão*
+O Colérico precisa de respeito e ação. O Sanguíneo precisa de entusiasmo e conexão. O Fleumático precisa de paz e segurança. E o Melancólico — como você — precisa de sensibilidade e de ser compreendido em profundidade. Quando você aprende a dar ao outro o que ele precisa, os relacionamentos se tornam muito mais leves.
+
+💬 *Frase do dia*
+"Amar bem é conhecer o que o outro precisa."
+
+🎯 *Desafio*
+Escolha uma pessoa importante e pense: o que ela mais precisa de mim agora? Ofereça isso com intenção.
+
+🙏 *Oração*
+Senhor, que meu amor chegue ao outro do jeito que ele consegue sentir. Amém.
+
+---
+
+**DIA 13 — Limites e respeito**
+
+🌿 *Reflexão*
+O Melancólico tem limites claros — precisa de espaço, de tempo para processar, de não ser pressionado. Mas às vezes não comunica esses limites e espera que o outro adivinhe. Isso gera frustração dos dois lados. Hoje, pratique comunicar seus limites com clareza e gentileza — é um ato de amor por você e pelo outro.
+
+💬 *Frase do dia*
+"Comunicar meus limites é me respeitar e respeitar o outro."
+
+🎯 *Desafio*
+Identifique um limite seu que você tem dificuldade de comunicar. Hoje, tente expressá-lo de forma gentil e direta.
+
+🙏 *Oração*
+Pai, que eu aprenda a dizer o que preciso sem culpa. Que meus limites sejam comunicados com amor. Amém.
+
+---
+
+**DIA 14 — Metade da jornada**
+
+🌿 *Reflexão*
+Metade do caminho. Você já está olhando para as pessoas com mais compreensão? Já sente mais empatia por quem processa diferente de você? Isso é crescimento real. O Melancólico que conhece a si mesmo e entende os outros é uma presença transformadora — porque enxerga com profundidade e ama com lealdade.
+
+💬 *Frase do dia*
+"Entender é o primeiro passo para amar melhor."
+
+🎯 *Desafio*
+Escreva os nomes de 3 pessoas na sua vida e tente identificar o temperamento de cada uma. O que isso muda na sua relação com elas?
+
+🙏 *Oração*
+Obrigada, Senhor, por tudo que aprendi até aqui. Que a segunda metade me transforme ainda mais. Amém.
+
+---
+
+### SEMANA 3 — VIVENDO MAIS LEVE
+
+---
+
+**DIA 15 — Soltar o que não posso controlar**
+
+🌿 *Reflexão*
+O Melancólico tende a se preocupar muito — com o futuro, com os detalhes, com o que pode dar errado. Essa antecipação tem seu valor, mas quando exagerada vira ansiedade. Hoje, pratique soltar o que está fora do seu controle. Você fez sua parte — o resto está nas mãos de Deus.
+
+💬 *Frase do dia*
+"Faço minha parte e confio no restante."
+
+🎯 *Desafio*
+Escreva uma preocupação que está carregando. Depois, escreva o que está no seu controle — e o que não está. Solte o segundo.
+
+🙏 *Oração*
+Senhor, entrego nas Tuas mãos o que não consigo controlar. Que eu descanse na Tua soberania. Amém.
+
+---
+
+**DIA 16 — Receber amor**
+
+🌿 *Reflexão*
+O Melancólico é bom em dar amor — mas às vezes tem dificuldade em receber. Um elogio é analisado. Um gesto de carinho é questionado. Isso pode afastar quem quer se aproximar. Hoje, pratique receber. Deixe o amor do outro chegar sem filtrar.
+
+💬 *Frase do dia*
+"Mereço receber o amor que ofereço."
+
+🎯 *Desafio*
+Quando alguém elogiar você hoje, apenas diga "obrigada" — sem minimizar, sem questionar, sem desviar o olhar.
+
+🙏 *Oração*
+Deus, abre meu coração para receber amor. Que eu me sinta digno de ser amado do jeito que sou. Amém.
+
+---
+
+**DIA 17 — Perdoar imperfeições**
+
+🌿 *Reflexão*
+O Melancólico sente profundamente as decepções — especialmente quando alguém não atinge o padrão esperado. Mas as pessoas, assim como você, são imperfeitas. E o amor real não exige perfeição — ele escolhe a pessoa apesar das falhas. Hoje, pratique perdoar uma imperfeição do outro que ainda está carregando.
+
+💬 *Frase do dia*
+"Perdoo as imperfeições do outro como quero ser perdoado nas minhas."
+
+🎯 *Desafio*
+Pense em alguém que te decepcionou. Hoje, faça um ato de perdão — interno ou externo.
+
+🙏 *Oração*
+Senhor, que eu perdoe com a mesma profundidade com que sinto. Que meu coração seja livre de mágoas. Amém.
+
+---
+
+**DIA 18 — Leveza no cotidiano**
+
+🌿 *Reflexão*
+Vida leve não significa vida sem profundidade. Significa não transformar cada coisa em um peso. Significa encontrar beleza no simples. O Melancólico tem uma capacidade linda de encontrar significado — mas pode usar essa mesma capacidade para encontrar beleza no ordinário. Uma xícara de chá. Uma conversa simples. Um pôr do sol. Isso também é profundo.
+
+💬 *Frase do dia*
+"Beleza está no simples, se eu abrir os olhos para ela."
+
+🎯 *Desafio*
+Hoje, encontre beleza em algo simples e ordinário. Registre esse momento — em palavras, em foto, como preferir.
+
+🙏 *Oração*
+Pai, que eu encontre Tua presença nas coisas simples. Que a beleza do cotidiano alimente minha alma. Amém.
+
+---
+
+**DIA 19 — Presença sem análise**
+
+🌿 *Reflexão*
+O Melancólico está sempre analisando — a situação, a conversa, o que o outro quis dizer. Isso é valioso, mas também cansativo. Às vezes, o melhor que você pode fazer é simplesmente estar presente, sem analisar tudo. Deixar o momento ser. Confiar que nem tudo precisa de interpretação.
+
+💬 *Frase do dia*
+"Posso estar presente sem precisar entender tudo."
+
+🎯 *Desafio*
+Em um momento social hoje, desligue o modo análise. Só observe, ouça e aproveite — sem dissecar depois.
+
+🙏 *Oração*
+Senhor, que eu aprenda a descansar no momento. Que minha mente encontre paz no simples ato de estar. Amém.
+
+---
+
+**DIA 20 — Gratidão pelas diferenças**
+
+🌿 *Reflexão*
+Você aprendeu muito com quem é diferente de você. O Colérico te ensinou ação. O Sanguíneo te ensinou leveza. O Fleumático te ensinou paciência. E você ensinou a todos eles profundidade, sensibilidade e lealdade. As diferenças não nos separam — nos completam.
+
+💬 *Frase do dia*
+"Somos melhores juntos do que seríamos sozinhos."
+
+🎯 *Desafio*
+Pense em alguém muito diferente de você e escreva o que aprendeu com essa pessoa. Agradeça — internamente ou a ela diretamente.
+
+🙏 *Oração*
+Obrigada, Senhor, por cada pessoa que é diferente de mim. Cada uma foi um presente de crescimento. Amém.
+
+---
+
+**DIA 21 — Uma vida mais leve**
+
+🌿 *Reflexão*
+Você chegou ao dia 21. Olhe para trás — o que mudou no seu olhar sobre você e sobre as pessoas? Talvez você esteja um pouco mais gentil consigo. Um pouco mais paciente com o outro. Um pouco mais capaz de soltar o que não pode controlar. Isso é leveza. E ela não apaga sua profundidade — a liberta.
+
+💬 *Frase do dia*
+"Sou mais leve porque aprendi a me aceitar e a aceitar o outro."
+
+🎯 *Desafio*
+Escreva 3 mudanças que você percebe em si mesmo após esses 21 dias. Celebre o crescimento.
+
+🙏 *Oração*
+Senhor, obrigada por essa jornada. Por cada dia de autoconhecimento e empatia. Que eu siga mais leve, mais gentil e mais próximo de quem amo. Amém.
+
+---
+---
+
+## 🟢 TEMPERAMENTO FLEUMÁTICO
+
+### SEMANA 1 — ME CONHECENDO
+
+---
+
+**DIA 1 — Quem eu sou**
+
+🌿 *Reflexão*
+Você é paz. Em um mundo cheio de ruído, você é a presença que acalma, que equilibra, que estabiliza. O Fleumático é aquele que todos buscam quando a tempestade chega. Sua calma não é fraqueza — é uma força rarissima. Você foi criado para ser âncora, para ser pontes, para trazer harmonia onde há conflito. Celebre isso hoje.
+
+💬 *Frase do dia*
+"Minha calma é um presente para o mundo."
+
+🎯 *Desafio*
+Escreva 3 qualidades suas que as pessoas ao redor apreciam — mesmo que você não perceba o quanto.
+
+🙏 *Oração*
+Senhor, obrigada por me criar com essa paz. Que ela seja instrumento de harmonia em cada lugar onde eu estiver. Amém.
+
+---
+
+**DIA 2 — Minha passividade**
+
+🌿 *Reflexão*
+O Fleumático prefere a harmonia ao conflito. Isso é lindo — mas às vezes vai longe demais. Você concorda quando não concorda. Cede quando deveria se posicionar. Evita conversas difíceis que precisariam acontecer. Isso gera paz por fora e tensão por dentro. Hoje, reflita: onde você tem cedido por conforto e não por convicção?
+
+💬 *Frase do dia*
+"Minha voz também importa. Posso me posicionar com paz."
+
+🎯 *Desafio*
+Hoje, expresse uma opinião sua em uma situação onde normalmente ficaria quieto. Com calma e respeito — mas diga.
+
+🙏 *Oração*
+Pai, dá-me coragem para usar minha voz quando preciso. Que eu seja pacífico sem ser omisso. Amém.
+
+---
+
+**DIA 3 — Minha procrastinação**
+
+🌿 *Reflexão*
+O Fleumático tem uma tendência natural de adiar. Não por preguiça — mas porque prefere esperar o momento certo, evitar o desconforto do início. Mas às vezes o momento certo nunca chega e a vida passa esperando. Hoje, dê um passo. Só um. O movimento gera movimento.
+
+💬 *Frase do dia*
+"Um passo imperfeito vale mais do que a espera perfeita."
+
+🎯 *Desafio*
+Escolha algo que você tem adiado. Faça o primeiro passo hoje — mesmo que pequeno.
+
+🙏 *Oração*
+Senhor, que eu não desperdice o tempo esperando que seja fácil. Que eu me mova na fé, mesmo sem ver o caminho todo. Amém.
+
+---
+
+**DIA 4 — Minha indiferença aparente**
+
+🌿 *Reflexão*
+As pessoas às vezes interpretam sua calma como desinteresse. "Você não se importa?", perguntam. Mas você se importa muito — só que de forma mais interna e menos expressiva. O problema é que quem está ao redor precisa sentir que você se importa. Hoje, pratique mostrar o que sente — mesmo que seja diferente de como os outros mostram.
+
+💬 *Frase do dia*
+"Posso mostrar que me importo do meu jeito."
+
+🎯 *Desafio*
+Demonstre afeto a alguém hoje de uma forma ativa — não apenas estando presente, mas expressando o quanto essa pessoa importa para você.
+
+🙏 *Oração*
+Deus, que meu amor seja sentido, não apenas existente. Que eu aprenda a expressar o que carrego no coração. Amém.
+
+---
+
+**DIA 5 — Minha resistência à mudança**
+
+🌿 *Reflexão*
+O Fleumático ama a estabilidade. Mudanças, surpresas e o novo podem ser desconfortáveis. Mas a vida é feita de mudanças — e quem não aprende a fluir com elas fica preso. Hoje, convide-se a abraçar uma pequena mudança com abertura. Não precisa ser grande. Só um passo em direção ao novo.
+
+💬 *Frase do dia*
+"Mudança pode ser o caminho para algo melhor."
+
+🎯 *Desafio*
+Faça algo diferente na sua rotina hoje. Algo pequeno que normalmente não faria. Observe como se sente.
+
+🙏 *Oração*
+Senhor, que eu confie em Ti quando as mudanças chegarem. Que minha estabilidade venha de Ti, não das circunstâncias. Amém.
+
+---
+
+**DIA 6 — Minha bondade**
+
+🌿 *Reflexão*
+O Fleumático tem um coração genuinamente bondoso. Você não guarda rancor com facilidade, não quer mal a ninguém, prefere o bem. Essa bondade é um reflexo de algo divino em você. Hoje, reconheça esse dom — e pense em como ele tem tocado a vida de quem está ao redor.
+
+💬 *Frase do dia*
+"Minha bondade transforma os lugares onde passo."
+
+🎯 *Desafio*
+Faça um ato de bondade hoje — pequeno, simples, mas intencional.
+
+🙏 *Oração*
+Obrigada, Senhor, por me criar com esse coração bondoso. Que minha bondade seja luz onde eu passar. Amém.
+
+---
+
+**DIA 7 — Meu dom é real**
+
+🌿 *Reflexão*
+Você chegou ao fim da primeira semana. O mundo precisa da sua calma, da sua paciência, da sua capacidade de trazer paz. Não subestime isso. Em um mundo agitado, você é presença curativa. E agora você está aprendendo a ser tudo isso sem se perder no caminho. Isso é crescimento. Isso é leveza.
+
+💬 *Frase do dia*
+"Sou paz, sou bondade, e estou crescendo."
+
+🎯 *Desafio*
+Escreva uma carta para si mesmo celebrando quem você é — com carinho e gratidão.
+
+🙏 *Oração*
+Senhor, obrigada por me criar assim. Que minha paz seja usada para Tua glória. Amém.
+
+---
+
+### SEMANA 2 — ENTENDENDO O OUTRO
+
+---
+
+**DIA 8 — O Colérico ao meu lado**
+
+🌿 *Reflexão*
+O Colérico é intenso, direto e urgente. Para o Fleumático que ama a paz, isso pode ser opressor. A energia forte do Colérico pode parecer agressão — mas geralmente é apenas paixão. Quando você entende que ele não quer te controlar, só quer mover as coisas, fica mais fácil conviver sem se sentir atropelado.
+
+💬 *Frase do dia*
+"A intensidade do outro não é ameaça — é estilo."
+
+🎯 *Desafio*
+Pense em um Colérico na sua vida. O que você pode aprender com a iniciativa e a decisão dele?
+
+🙏 *Oração*
+Senhor, que eu aprenda a enxergar o dom no jeito intenso do outro. Amém.
+
+---
+
+**DIA 9 — O Sanguíneo ao meu lado**
+
+🌿 *Reflexão*
+O Sanguíneo é animado, barulhento e cheio de energia. Para o Fleumático que prefere a tranquilidade, isso pode ser cansativo. Mas o Sanguíneo traz alegria e movimento para a vida — coisas que o Fleumático às vezes precisa. Em vez de se retrair, tente apreciar a leveza que ele traz.
+
+💬 *Frase do dia*
+"A alegria do outro pode me contagiar, se eu deixar."
+
+🎯 *Desafio*
+Participe de algo animado com um Sanguíneo hoje. Deixe-se envolver sem resistir.
+
+🙏 *Oração*
+Pai, que eu me permita alegria. Que minha paz não vire distância do que é bom. Amém.
+
+---
+
+**DIA 10 — O Melancólico ao meu lado**
+
+🌿 *Reflexão*
+O Melancólico e o Fleumático têm muito em comum — ambos são quietos e introspectivos. Mas o Melancólico sente com muito mais intensidade e pode ficar preso em pensamentos pesados. Quando isso acontece, o Fleumático tem o dom de ser uma presença estável e acolhedora. Você não precisa ter respostas — só precisa estar lá.
+
+💬 *Frase do dia*
+"Às vezes presença é mais poderosa do que palavras."
+
+🎯 *Desafio*
+Se tiver um Melancólico na sua vida passando por algo difícil, ofereça sua presença hoje — sem pressão, sem conselhos obrigatórios. Só esteja.
+
+🙏 *Oração*
+Senhor, que eu seja presença de paz para quem está em tormenta. Amém.
+
+---
+
+**DIA 11 — Como me comunicar melhor**
+
+🌿 *Reflexão*
+O Fleumático se comunica de forma calma e econômica. Isso é bom — mas às vezes fala tão pouco que o outro não sabe o que está sentindo ou pensando. O Colérico quer clareza. O Sanguíneo quer conexão emocional. O Melancólico quer profundidade. Aprender a dar um pouco mais nas conversas é uma forma de se aproximar.
+
+💬 *Frase do dia*
+"Compartilhar mais é construir pontes."
+
+🎯 *Desafio*
+Em uma conversa hoje, vá um pouco além do mínimo. Compartilhe o que está sentindo, pensando, ou observando.
+
+🙏 *Oração*
+Deus, que eu me abra mais nas relações que importam. Que minha comunicação construa e não distancie. Amém.
+
+---
+
+**DIA 12 — O que cada um precisa de mim**
+
+🌿 *Reflexão*
+O Colérico precisa de respeito e de ser levado a sério. O Sanguíneo precisa de entusiasmo e de se sentir visto. O Melancólico precisa de espaço e de sensibilidade. E o Fleumático — como você — precisa de paz e de não ser pressionado. Quando você aprende a dar ao outro o que ele precisa, os vínculos ficam mais profundos e mais leves.
+
+💬 *Frase do dia*
+"Amar bem é conhecer o que o outro precisa."
+
+🎯 *Desafio*
+Escolha uma pessoa importante e pense: o que ela mais precisa de mim agora? Ofereça isso hoje.
+
+🙏 *Oração*
+Senhor, que meu amor chegue ao outro da forma que ele consegue receber. Amém.
+
+---
+
+**DIA 13 — Limites e voz**
+
+🌿 *Reflexão*
+O Fleumático tem limites — mas raramente os comunica. Prefere aguentar a criar atrito. Mas limites não comunicados viram ressentimentos guardados. E ressentimento corrói a paz que você tanto preza. Hoje, pratique dizer não — com gentileza, mas com firmeza.
+
+💬 *Frase do dia*
+"Dizer não quando preciso é respeitar a mim e ao outro."
+
+🎯 *Desafio*
+Hoje, identifique algo que você está fazendo por pressão e não por vontade. E gentilmente comunique seu limite.
+
+🙏 *Oração*
+Pai, que eu aprenda a dizer não com paz e sem culpa. Que meus limites sejam comunicados com amor. Amém.
+
+---
+
+**DIA 14 — Metade da jornada**
+
+🌿 *Reflexão*
+Metade do caminho. Você já está olhando para as pessoas com mais compreensão? Já sente mais empatia por quem é diferente de você? O Fleumático que se conhece e entende os outros é uma presença de cura — porque traz calma e harmonia para os relacionamentos. Continue.
+
+💬 *Frase do dia*
+"Entender é o primeiro passo para amar melhor."
+
+🎯 *Desafio*
+Escreva os nomes de 3 pessoas na sua vida e tente identificar o temperamento de cada uma. O que isso muda na sua relação com elas?
+
+🙏 *Oração*
+Obrigada, Senhor, por tudo que aprendi até aqui. Que a segunda metade me transforme ainda mais. Amém.
+
+---
+
+### SEMANA 3 — VIVENDO MAIS LEVE
+
+---
+
+**DIA 15 — Me posicionar com paz**
+
+🌿 *Reflexão*
+Leveza não é evitar tudo que é difícil. É enfrentar com paz. O Fleumático precisa aprender que se posicionar não destrói a harmonia — às vezes é o que cria a harmonia verdadeira. Uma conversa difícil dita com calma resolve mais do que um silêncio que acumula mágoa.
+
+💬 *Frase do dia*
+"Posso ser firme e ainda assim ser gentil."
+
+🎯 *Desafio*
+Hoje, tenha uma conversa que você tem evitado. Com calma, com respeito — mas com clareza.
+
+🙏 *Oração*
+Senhor, dá-me coragem para o que precisa ser dito. Que eu seja instrumento de paz verdadeira, não de silêncio vazio. Amém.
+
+---
+
+**DIA 16 — Tomar iniciativa**
+
+🌿 *Reflexão*
+O Fleumático espera — espera o outro tomar a frente, espera o momento certo, espera que as coisas se ajeitem. Mas às vezes a vida espera que você dê o primeiro passo. Hoje, tome uma iniciativa. Pequena, mas real. Você tem mais capacidade do que imagina.
+
+💬 *Frase do dia*
+"Posso começar. Não preciso esperar que alguém me empurre."
+
+🎯 *Desafio*
+Identifique algo que você tem esperado o outro fazer. Hoje, tome a iniciativa você mesmo.
+
+🙏 *Oração*
+Pai, acende em mim o desejo de agir. Que eu use minha estabilidade como base para me mover, não como desculpa para parar. Amém.
+
+---
+
+**DIA 17 — Expressar afeto**
+
+🌿 *Reflexão*
+O Fleumático sente amor profundamente — mas expressá-lo é um desafio. As pessoas ao seu redor às vezes se perguntam se você realmente se importa. Hoje, mostre. Uma palavra, um gesto, uma mensagem. O amor que fica só dentro não transforma relacionamentos.
+
+💬 *Frase do dia*
+"O amor que expresso é o amor que o outro consegue receber."
+
+🎯 *Desafio*
+Diga a alguém que você ama o quanto ela significa para você — de forma direta, com palavras.
+
+🙏 *Oração*
+Senhor, que meu amor seja visível. Que quem eu amo saiba que é amado. Amém.
+
+---
+
+**DIA 18 — Celebrar pequenas vitórias**
+
+🌿 *Reflexão*
+O Fleumático raramente se celebra. Faz as coisas, passa para a próxima, sem parar para reconhecer o quanto cresceu. Mas celebrar é importante — alimenta a motivação, fortalece a identidade e renova a energia. Hoje, celebre algo — por menor que pareça.
+
+💬 *Frase do dia*
+"Pequenas vitórias merecem grandes celebrações."
+
+🎯 *Desafio*
+Pense em algo que você fez bem recentemente. Celebre de uma forma que seja boa para você — escreva, compartilhe, agradeça.
+
+🙏 *Oração*
+Obrigada, Senhor, pelas vitórias que não percebi. Que eu aprenda a reconhecer Tua graça nas pequenas coisas. Amém.
+
+---
+
+**DIA 19 — Paz que transforma**
+
+🌿 *Reflexão*
+Sua paz não é passiva. Quando usada com intenção, ela transforma conflitos, suaviza tensões, cria espaço para que as pessoas se abram. Você tem esse poder — de entrar em um ambiente e baixar a temperatura. Hoje, use essa paz de forma ativa e intencional. Seja instrumento de harmonia onde você estiver.
+
+💬 *Frase do dia*
+"Minha paz é ativa — ela age, mesmo em silêncio."
+
+🎯 *Desafio*
+Em um ambiente de tensão hoje, seja conscientemente uma presença de paz. Observe o que muda.
+
+🙏 *Oração*
+Senhor, que minha paz seja Tua paz. Que ela chegue antes de mim e fique depois que eu for. Amém.
+
+---
+
+**DIA 20 — Gratidão pelas diferenças**
+
+🌿 *Reflexão*
+Você aprendeu muito com quem é diferente de você. O Colérico te ensinou ação. O Sanguíneo te ensinou alegria. O Melancólico te ensinou profundidade. E você ensinou a todos eles calma, paciência e paz. As diferenças nos tornam mais completos — quando as abraçamos.
+
+💬 *Frase do dia*
+"O que é diferente de mim me completa."
+
+🎯 *Desafio*
+Pense em algo que você aprendeu com alguém muito diferente de você. Agradeça a essa pessoa — internamente ou a ela diretamente.
+
+🙏 *Oração*
+Obrigada, Senhor, por cada pessoa diferente de mim. Cada uma me tornou mais completo. Amém.
+
+---
+
+**DIA 21 — Uma vida mais leve**
+
+🌿 *Reflexão*
+Você chegou ao dia 21. Pense em quem você era no começo — e em quem você é agora. Mais presente. Mais expressivo. Mais corajoso para se posicionar. Mais consciente de si e dos outros. Sua paz continua — mas agora ela tem voz, tem ação, tem profundidade. Isso é uma vida mais leve. E ela floresce de dentro para fora.
+
+💬 *Frase do dia*
+"Sou mais leve porque me conheço e escolho amar com intenção."
+
+🎯 *Desafio*
+Escreva 3 mudanças que você percebe em si mesmo após esses 21 dias. E faça um compromisso com quem você quer continuar sendo.
+
+🙏 *Oração*
+Senhor, obrigada por essa jornada. Por cada reflexão, cada desafio, cada momento de crescimento. Que eu siga em paz, com voz, com amor e com propósito. Amém.
+
+---
+- COMO ME RELACIONAR COM OS TEMPERAMENTOS: Conversa acolhedora sobre relacionamentos entre temperamentos. Siga este fluxo:
+  1. A florzinha descreve a pessoa — se não souber o temperamento, analise o comportamento descrito e identifique o provável, confirmando com ela antes de avançar.
+  2. Com os dois temperamentos identificados (o dela + o da outra pessoa), entregue na ordem:
+     a) Como esse temperamento demonstra amor
+     b) Como reage quando está ferido
+     c) O que gera conflito entre os dois temperamentos
+     d) O que ela pode aprender com essa pessoa
+     e) Como melhorar a comunicação entre os dois
+     f) Exercícios práticos no dia a dia — mínimo 3 exercícios simples e específicos para essa combinação de temperamentos, com situações reais do cotidiano
+     g) Versículo para fortalecer esse relacionamento
+     h) Oração pelo relacionamento — curta, emocional, na 1ª pessoa
+  3. Nunca julgue a outra pessoa. Nunca incentive separações. Sempre traga esperança e a perspectiva de Deus sobre o amor e os relacionamentos.
+  4. Após entregar o conteúdo, pergunte se ela quer aprofundar algum ponto ou tem outra situação para trabalhar.
+- SEU TEMPERAMENTO REVELA SEU PROPÓSITO: Entregue EXATAMENTE o conteúdo fixo abaixo para o temperamento da florzinha, nesta ordem, sem desviar para outros temas. Após a florzinha dizer "sim", entregue todo o conteúdo de uma vez. Formate cada título de seção em negrito usando **título** e deixe uma linha em branco entre cada seção para respirar. Ao final pergunte se ela quer conversar mais sobre alguma parte.
+
+CONTEÚDO POR TEMPERAMENTO:
+
+═══ MELANCÓLICO ═══
+Como Deus vê seu temperamento:
+Deus te criou com olhos que enxergam além da superfície. Enquanto o mundo passa correndo, você para. Você sente o peso das coisas, a beleza escondida, a dor que ninguém nomeia. Isso não é fraqueza — é um chamado profético. Você foi criada para ver o que os outros perdem.
+
+O que seu temperamento foi criado para fazer no mundo:
+Você é a intercessora que ora com profundidade genuína. A conselheira que ouve de verdade. A criadora que produz arte, palavras e conteúdo que tocam a alma e movem corações para Deus. A professora que ensina com riqueza e cuidado. Sua sensibilidade não é excesso — é o instrumento que Deus usa para chegar onde nenhuma lógica alcança.
+
+O que você pode fazer para o Reino através do seu dom:
+• Intercessão profunda — você ora com uma entrega que poucos conseguem
+• Aconselhamento e acolhimento — você cria espaço seguro para quem carrega dor
+• Criação de conteúdo, arte e escrita que toca a alma e aponta para Deus
+• Ensino bíblico com profundidade e detalhes que outros passam por cima
+• Ser a pessoa que enxerga quem está sofrendo em silêncio — e vai ao encontro
+
+Personagem bíblico — Maria de Betânia:
+Maria era profunda, contemplativa, sensível. Enquanto Marta resolvia, ela parou. Escolheu ficar aos pés de Jesus quando o mundo exigia que ela fosse útil. E foi exatamente nessa profundidade silenciosa que ela fez o que nenhum discípulo teve coragem de fazer — ungiu Jesus antes da cruz. Não foi a mais produtiva. Foi a que estava mais presente.
+O que Deus fez com ela: transformou sua contemplação em profecia. Sua pausa em ato eterno. Jesus disse que o que ela fez seria lembrado para sempre.
+
+Sua sabotagem:
+"Não estou pronta ainda. Quando eu melhorar, quando eu for mais consistente, quando eu parar de errar tanto — aí sim vou poder ser usada por Deus."
+Essa voz te paralisa com uma perfeição que nunca chega. E enquanto você espera estar pronta, o propósito fica esperando.
+
+A verdade que quebra a sabotagem:
+Deus não esperou que Maria fosse produtiva para usá-la. Não esperou que Jeremias se sentisse capaz. Ele escolhe exatamente quem acha que não está pronta — porque é nessa entrega que a glória Dele aparece. Você não precisa se consertar para florescer. Você precisa se entregar.
+
+Versículo profético: "Porque somos feitura sua, criados em Cristo Jesus para boas obras, as quais Deus preparou de antemão para que andássemos nelas." — Efésios 2:10
+
+Oração de ativação:
+Senhor, eu solto a exigência de ser perfeita antes de ser usada. Confio que o dom que Tu colocaste em mim — essa profundidade, essa sensibilidade, essa capacidade de enxergar o que os outros não veem — já é suficiente para o Teu propósito. Usa minha alma sensível para tocar almas que só ela consegue alcançar. Que minha profundidade seja Tua voz no mundo. Amém.
+
+═══ SANGUÍNEO ═══
+Como Deus vê seu temperamento:
+Deus te criou como luz. Não uma luz tímida — uma luz que entra, ilumina e transforma o ambiente. Sua alegria não é superficialidade, é um dom sobrenatural. Em um mundo pesado, você foi criada para lembrar as pessoas de que há motivo para sorrir, para crer, para continuar.
+
+O que seu temperamento foi criado para fazer no mundo:
+Você é a evangelista que não precisa de roteiro — ela contagia. A comunicadora que explica o evangelho de um jeito que qualquer pessoa entende e quer conhecer. A criadora de ambientes onde pessoas se sentem bem-vindas e amadas. A ponte entre quem está longe de Deus e quem pode apresentá-lo. Você não convence pelo argumento — você transforma pelo amor.
+
+O que você pode fazer para o Reino através do seu dom:
+• Evangelismo natural — você atrai pessoas e cria conexão onde vai
+• Comunicação do evangelho com leveza, criatividade e emoção
+• Criar comunidades e ambientes de acolhimento e pertencimento
+• Ser a pessoa que abre a porta da fé para quem estava longe
+• Inspirar e animar equipes, ministérios e pessoas desanimadas
+• Usar redes sociais, voz e presença para levar a mensagem de Deus
+
+Personagem bíblico — A Mulher Samaritana:
+Ela era extrovertida, comunicativa, vivia de conexão em conexão. Tinha uma história complicada — cinco maridos, julgada pela cidade. Mas quando encontrou Jesus no poço, não ficou quieta. Largou o cântaro e foi contar para todo mundo. Sem treinamento, sem preparo, sem credencial. Só com o coração transbordando.
+O que Deus fez com ela: usou sua comunicação natural — que o mundo usava para julgar — como instrumento de avivamento. Uma cidade inteira foi ao encontro de Jesus por causa dela. Sua alegria virou evangelismo.
+
+Sua sabotagem:
+"Sou leviana demais. Ninguém vai me levar a sério. Propósito é coisa séria — e eu sou muito animada, muito intensa, muito... demais."
+Essa voz usa seu maior dom contra você. Te faz envergonhar justamente do que Deus vai usar.
+
+A verdade que quebra a sabotagem:
+A Mulher Samaritana não tinha credencial — tinha um encontro real com Jesus e uma boca que não conseguia ficar quieta. Deus não precisa que você seja sóbria e séria o tempo todo. Ele precisa que você seja você — com toda a sua energia, alegria e capacidade de conectar pessoas. Sua leveza é estratégica no Reino.
+
+Versículo profético: "Alegrai-vos sempre no Senhor; outra vez digo, alegrai-vos." — Filipenses 4:4
+
+Oração de ativação:
+Senhor, eu recebo minha alegria como missão, não como distração. Que minha energia seja direcionada pelo Teu Espírito. Que minha comunicação leve pessoas a Te encontrar. Usa minha voz, minha presença, meu sorriso — tudo isso é Teu. Que eu seja porta aberta para quem ainda está do lado de fora. Amém.
+
+═══ COLÉRICO ═══
+Como Deus vê seu temperamento:
+Deus te criou com fogo. Uma determinação que move montanhas, uma visão que enxerga o que ainda não existe, uma coragem que age quando os outros ainda estão pensando. Você não foi criada para seguir — foi criada para iniciar. Para abrir caminhos onde não há trilha.
+
+O que seu temperamento foi criado para fazer no mundo:
+Você é a líder que começa o que precisa ser começado. A pioneira que funda ministérios, abre igrejas, cria projetos, transforma estruturas. A voz que chama à ação quando todos estão paralisados pelo medo. A pessoa que não aceita o impossível como resposta final. Você foi criada para mover o que estava parado — e fazer isso com fé.
+
+O que você pode fazer para o Reino através do seu dom:
+• Iniciar e liderar ministérios, projetos e movimentos que transformam vidas
+• Ser a voz profética que convoca à ação e à mudança
+• Transformar estruturas injustas com determinação e coragem
+• Liderar equipes e capacitar pessoas para realizarem seu potencial
+• Ser a pessoa que não desiste quando o projeto de Deus enfrenta resistência
+• Usar sua força executora para colocar os sonhos de Deus em prática
+
+Personagem bíblico — Débora:
+Débora era juíza, profetisa e líder militar numa época em que nenhuma mulher ocupava esse espaço. Ela não esperou permissão. Não esperou que um homem tomasse a frente. Quando Baraque hesitou, ela disse: eu vou com você. Sua determinação, sua visão, sua coragem de agir quando todos estavam paralisados pelo medo — foi exatamente isso que Deus usou para libertar Israel.
+O que Deus fez com ela: transformou sua liderança natural em libertação de um povo inteiro. Sua força não foi domada — foi direcionada.
+
+Sua sabotagem:
+"Tenho que fazer tudo sozinha. Se eu depender de alguém vai atrasar, vai errar. Melhor eu mesma do que confiar e me decepcionar."
+Essa voz disfarça o medo de confiar de força. E te deixa sozinha carregando o que foi feito para ser dividido.
+
+A verdade que quebra a sabotagem:
+Débora era forte — mas chamou Baraque. Ela sabia que o propósito de Deus raramente se cumpre sozinho. Sua força é real. Mas força que não aprende a confiar se torna prisão. Deus não quer que você carregue tudo — Ele quer que você lidere com a força Dele, não só com a sua.
+
+Versículo profético: "Não por força, nem por poder, mas pelo meu Espírito, diz o Senhor dos Exércitos." — Zacarias 4:6
+
+Oração de ativação:
+Senhor, eu entrego minha força nas Tuas mãos. Não quero liderar pelo meu poder — quero ser conduzida pelo Teu Espírito. Usa minha determinação para o Teu Reino. Usa minha coragem para abrir caminhos que ainda não existem. Que eu seja pioneira pelo Teu amor, não pela minha vontade. Amém.
+
+═══ FLEUMÁTICO ═══
+Como Deus vê seu temperamento:
+Deus te criou como paz. Não a paz vazia — a paz que o mundo não consegue fabricar. Você carrega algo raro: a capacidade de entrar em qualquer ambiente e baixar a temperatura, criar segurança, fazer as pessoas se sentirem em casa. Isso é um dom sobrenatural. Numa geração ansiosa, você é necessária.
+
+O que seu temperamento foi criado para fazer no mundo:
+Você é a mediadora que resolve o que a força não consegue. A intercessora silenciosa que sustenta em oração sem precisar de palco. O porto seguro que permite que outros floresçam porque se sentem seguros perto de você. A presença estabilizadora que os ministérios e famílias precisam para não implodir. Você não grita — mas onde você está, o céu se instala.
+
+O que você pode fazer para o Reino através do seu dom:
+• Intercessão e oração silenciosa que sustenta o que outros estão construindo
+• Mediação e reconciliação — você resolve conflitos que outros apenas aumentam
+• Ser presença de cura e segurança para pessoas ansiosas e feridas
+• Sustentar equipes, ministérios e famílias com estabilidade e lealdade
+• Acolher quem chegou machucado e criar espaço para restauração
+• Ser a âncora espiritual que mantém tudo no lugar quando a tempestade vem
+
+Personagem bíblico — Rute:
+Rute não tinha grandes discursos. Não liderava multidões. Mas tinha uma lealdade inabalável e uma fidelidade silenciosa que moveu o coração de Deus. Passo a passo, sem pressa, sem forçar — ela foi fiel. E essa fidelidade tranquila a colocou na linhagem de Jesus. Não foi a mais barulhenta. Foi a mais constante.
+O que Deus fez com ela: usou sua paz e lealdade silenciosa para escrever uma das histórias de redenção mais bonitas da Bíblia. Sua constância virou legado eterno.
+
+Sua sabotagem:
+"Quem sou eu para ter um propósito grande? Não tenho a energia, nem a alegria, nem a profundidade dos outros. Sou só mais uma."
+Essa voz usa sua humildade contra você. Te faz confundir quietude com insignificância.
+
+A verdade que quebra a sabotagem:
+Ester não era a mais barulhenta do palácio — era a mais sábia. Rute não forçou nada — foi fiel passo a passo. Barnabé não era o pregador mais famoso — mas foi ele quem deu uma chance a Paulo quando ninguém mais confiava. Sua paz não é ausência de propósito — é o próprio propósito em forma de presença.
+
+Versículo profético: "Quem sabe se não foi para um momento como este que você chegou à posição que ocupa?" — Ester 4:14
+
+Oração de ativação:
+Senhor, eu recebo meu propósito. Não preciso ser barulhenta para ser usada. Não preciso de palco para fazer diferença. Que minha paz seja Tua paz. Que minha presença seja cura. Usa minha lealdade, minha estabilidade, minha capacidade de estar — para o Teu Reino. Que onde eu for, o céu chegue junto. Amém.`;
+}
+
+function abertura(mod, key){
+  const t = TEMAS[key];
+  const n = state.nome || "florzinha";
+  const map = {
+    oracao:`${n === "florzinha" ? "Florzinha 🌸" : `Florzinha ${n} 🌸`}, que bom que você veio buscar esse momento com Deus. 🙏\n\nVou criar uma oração feita especialmente para você, com base no temperamento **${t.nome}**.\n\nMe conta: o que seu coração mais precisa levar diante de Deus agora?`,
+    jornada:`${n === "florzinha" ? "Florzinha 🌸" : `Florzinha ${n} 🌸`}, que privilégio caminhar com você nesses 21 dias! 🌱\n\nA Jornada de 21 Dias do temperamento **${t.nome}** foi criada para transformar o que você conhece de si mesma em florescer de verdade.\n\nEstá organizada em 3 semanas:\n🌱 Semana 1 — Me Conhecendo\n🌸 Semana 2 — Entendendo o Outro\n✨ Semana 3 — Vivendo Mais Leve\n\nVocê está pronta para começar? Me diz *sim* e eu te entrego o Dia 1.`,
+    proposito:`${n === "florzinha" ? "Florzinha 🌸" : `Florzinha ${n} 🌸`}, que bom que você veio aqui.\n\nEntender quem está ao seu lado muda tudo — nos relacionamentos, na família, no trabalho, no amor.\n\nMe conta: tem alguém na sua vida que você quer entender melhor?\n\nSe você sabe o temperamento dessa pessoa, me diz qual é. Se não sabe, sem problema — me descreve como ela se comporta e eu identifico para você.`,
+    seuprop:`${n === "florzinha" ? "Florzinha 🌸" : `Florzinha ${n} 🌸`}, que alegria estar aqui com você nesse momento. ✨\n\nVou te mostrar agora como o seu temperamento **${t.nome}** revela o propósito que Deus colocou na sua vida.\n\nPronta para receber isso? Me diz *sim* e eu começo.`
+  };
+  return map[mod.id];
+}
+
+function capitalize(str){
+  if(!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function mdToHtml(txt){
+  return txt.split("\n").map(l=>{
+    if(l.trim() === "---") return "";
+    if(l.trim() === "") return `<div style="height:10px"></div>`;
+    if(l.trim().startsWith("### ")) return `<p style="margin:20px 0 6px;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;color:#3a2820;line-height:1.3">${l.trim().replace(/^###\s*/,"")}</p>`;
+    if(l.trim().startsWith("## "))  return `<p style="margin:22px 0 6px;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:#3a2820;line-height:1.3">${l.trim().replace(/^##\s*/,"")}</p>`;
+    if(l.trim().startsWith("# "))   return `<p style="margin:24px 0 8px;font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:#3a2820;line-height:1.3">${l.trim().replace(/^#\s*/,"")}</p>`;
+    // Negrito que ocupa a linha INTEIRA vira título de seção
+    const soloBlod = l.trim().match(/^\*\*([^*]+)\*\*$/);
+    if(soloBlod) return `<p style="margin:18px 0 6px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:#3a2820;letter-spacing:0.3px">${soloBlod[1]}</p>`;
+    // Negrito inline dentro de texto normal
+    const h = l.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\*(.*?)\*/g,"<em>$1</em>");
+    return `<p style="margin:0 0 6px 0;line-height:1.75;font-size:14px">${h}</p>`;
+  }).filter(l=>l!=="").join("")
+}
+
+// ─── AÇÕES ────────────────────────────────────────────────────────────────────
+function escolherQuiz(key){
+  const novos = {...state.pontos};
+  novos[key]++;
+  const prox = state.quizStep + 1;
+  if(prox >= PERGUNTAS.length){
+    const res = Object.entries(novos).sort((a,b)=>b[1]-a[1])[0][0];
+    setState({pontos:novos, tempKey:res, tela:"resultado"});
+  } else {
+    setState({pontos:novos, quizStep:prox});
+  }
+}
+
+function handleModulo(mod){
+  if(!state.tempKey){
+    setState({escolhendoTemp:true, moduloPendente:mod});
+  } else {
+    abrirModulo(mod, state.tempKey);
+  }
+}
+
+function escolherTempParaModulo(key){
+  setState({tempKey:key, escolhendoTemp:false});
+  abrirModulo(state.moduloPendente, key);
+  state.moduloPendente = null;
+}
+
+function abrirModulo(mod, key){
+  // Se for jornada, verifica se tem progresso salvo
+  if(mod.id === "jornada"){
+    const salvo = carregarJornada(key);
+    if(salvo && salvo.msgs && salvo.msgs.length > 0){
+      const t = TEMAS[key];
+      const n = state.nome || "florzinha";
+      const retomada = { role:"assistant", content:`Florzinha ${n === "florzinha" ? "🌸" : n + " 🌸"}, bem-vinda de volta à sua jornada! 🌱\n\nVocê estava no **Dia ${salvo.diaAtual}** da Jornada do temperamento **${t.nome}**.\n\nQuer continuar de onde parou?` };
+      setState({ modulo:mod, msgs:[...salvo.msgs, retomada], tela:"chat" });
+      return;
+    }
+  }
+  setState({modulo:mod, msgs:[{role:"assistant",content:abertura(mod,key)}], tela:"chat"});
+}
+
+async function enviar(){
+  const texto = state.input.trim();
+  if(!texto || state.loading) return;
+  const hist = [...state.msgs, {role:"user",content:texto}];
+  setState({msgs:hist, input:"", loading:true});
+
+  // Usa system do diário se for esse módulo
+  const sys = (state.modulo?.id === "diario" && state.diarioSys) ? state.diarioSys : buildSystem();
+
+  try {
+    const resp = await fetch("/.netlify/functions/claude",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        system:sys,
+        messages:hist.map(m=>({role:m.role,content:m.content}))
+      })
+    });
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
+    const reply = data?.content?.find(b=>b.type==="text")?.text;
+    if(!reply) throw new Error("vazio");
+    const novasMsgs = [...hist,{role:"assistant",content:reply}];
+    setState({msgs:novasMsgs, loading:false});
+
+    // Salva resposta no diário e volta para tela do diário
+    if(state.modulo?.id === "diario" && state.diarioId){
+      const notasAtuais = carregarNotas();
+      const idx = notasAtuais.findIndex(x => x.id === state.diarioId);
+      if(idx !== -1){ notasAtuais[idx].resposta = reply; }
+      localStorage.setItem("florzinha_diario", JSON.stringify(notasAtuais));
+      state.diarioId = null;
+      setState({msgs:novasMsgs, loading:false, tela:"diario", modulo:null});
+      return;
+    }
+
+    // Auto-salvar histórico de relacionamentos
+    if(state.modulo?.id === "proposito"){
+      salvarHistorico({
+        temperamento: state.tempKey,
+        nome: state.nome,
+        msgs: novasMsgs,
+        resumo: texto.slice(0,60),
+        data: Date.now()
+      });
+    }
+
+    // Auto-salvar progresso da jornada
+    if(state.modulo?.id === "jornada" && state.tempKey){
+      const diaMatch = reply.match(/[Dd]ia\s+(\d+)/);
+      const diaAtual = diaMatch ? parseInt(diaMatch[1]) : 1;
+      salvarJornada(state.tempKey, diaAtual, novasMsgs);
+    }
+
+  } catch(e){
+    console.error(e && e.message ? e.message : e);
+    setState({msgs:[...hist,{role:"assistant",content:"Respira, florzinha… tive uma pausa. Pode tentar de novo? 🌸"}], loading:false});
+  }
+}
+
+function retomar(idx){
+  const hist = carregarHistorico();
+  const h = hist[idx];
+  if(!h) return;
+  setTempKey(h.temperamento);
+  setState({
+    tempKey: h.temperamento,
+    modulo: MODULOS.find(m=>m.id==="proposito"),
+    msgs: h.msgs,
+    tela: "chat"
+  });
+}
+
+function setTempKey(k){ state.tempKey = k; }
+
+function deletarConversa(idx){
+  try {
+    const hist = carregarHistorico();
+    hist.splice(idx, 1);
+    localStorage.setItem("florzinha_relacionamentos", JSON.stringify(hist));
+    render();
+  } catch(e){}
+}
+
+function limparHistorico(){
+  if(confirm("Apagar todas as conversas salvas?")) {
+    localStorage.removeItem("florzinha_relacionamentos");
+    render();
+  }
+}
+
+function reiniciar(){
+  setState({tela:"inicio",nome:"",quizStep:0,
+    pontos:{melancolico:0,sanguineo:0,colerico:0,fleumatico:0},
+    tempKey:null,modulo:null,msgs:[],input:"",loading:false,
+    escolhendoTemp:false,moduloPendente:null});
+}
+
+// ─── DIÁRIO ────────────────────────────────────────────────────────────────────
+function carregarNotas(){
+  try { return JSON.parse(localStorage.getItem("florzinha_diario") || "[]"); }
+  catch(e){ return []; }
+}
+
+function salvarNota(texto){
+  if(!texto.trim()) return;
+  try {
+    const notas = carregarNotas();
+    notas.unshift({ id: Date.now(), texto: texto.trim(), resposta: null, data: Date.now() });
+    localStorage.setItem("florzinha_diario", JSON.stringify(notas.slice(0,100)));
+  } catch(e){}
+}
+
+function salvarNotaComResposta(texto){
+  if(!texto.trim()) return;
+  const id = Date.now();
+  const t = state.tempKey ? TEMAS[state.tempKey] : {nome:"não definido",apelido:"",dons:[],desafios:[]};
+  const n = state.nome || "florzinha";
+
+  // Salva no localStorage
+  const notas = carregarNotas();
+  notas.unshift({ id, texto: texto.trim(), resposta: null, data: id });
+  localStorage.setItem("florzinha_diario", JSON.stringify(notas.slice(0,100)));
+
+  // Usa a infraestrutura do chat diretamente
+  state.diarioId = id;
+  const modDiario = {id:"diario", label:"Meu Diário"};
+  const sys = `Você é a Florzinha — amiga espiritual madura, evangélica, fundamentada na Palavra de Deus. Você conhece o temperamento dessa mulher e fala com ela como quem a conhece de verdade.
+
+CONTEXTO:
+- Nome: ${n}
+- Temperamento: ${t.nome} (${t.apelido})
+- Dons: ${t.dons.join(", ")}
+- Desafios: ${t.desafios.join(", ")}
+
+ESTRUTURA DA RESPOSTA — siga sempre esta ordem:
+
+1. ACOLHIMENTO — comece com o nome dela
+"${n}, eu li cada palavra..."
+Uma frase que mostra que você realmente ouviu. Valida o sentimento sem minimizar.
+
+2. ESPELHO + CORREÇÃO AMOROSA
+Devolve o que ela escreveu com perspectiva. Quando necessário, fala a verdade com amor — nunca a frio, sempre depois de acolher.
+Por temperamento:
+- Melancólico: corrige autocrítica, perfeccionismo, isolamento
+- Sanguíneo: corrige impulsividade, busca por aprovação, superficialidade
+- Colérico: corrige controle, dureza, autossuficiência
+- Fleumático: corrige passividade, silêncio emocional, acomodação
+
+3. VERSÍCULO EM DESTAQUE
+Específico para o que ela sentiu — nunca genérico. Varia por toda a Bíblia. Nunca repete.
+
+4. ENCORAJAMENTO PELO TEMPERAMENTO
+Use o nome dela aqui também. Uma frase que fala direto com o dom dela — mostra que Deus vê e usa exatamente quem ela é.
+
+5. DECLARAÇÃO PARA O DIA
+Uma frase curta e poderosa. Começa com "Eu sou..." ou "Hoje eu escolho..."
+
+TOM: Amoroso mas honesto. Presente mas não pesado. Corrige sem condenar. Encoraja sem ser vazio. Use o nome dela em pelo menos 2 momentos.
+
+LIMITE: Se detectar dor grave (violência, automutilação, depressão profunda):
+1. Acolhe profundamente
+2. Fala: "${n}, o que você está sentindo é maior do que eu consigo abraçar aqui. Você merece ajuda de verdade — de alguém que possa estar presente com você."
+3. Encoraja ajuda profissional e/ou pastoral
+4. Ora antes de encerrar
+Nunca diagnostica. Nunca abandona.
+
+TAMANHO: Médio — blocos curtos para celular. Parágrafos de no máximo 3 linhas.`;
+  // Chama a API diretamente sem depender do enviar()
+  const msgs = [{role:"user", content: texto.trim()}];
+  setState({tela:"diario", loading:true});
+
+  fetch("/.netlify/functions/claude", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({system: sys, messages: msgs})
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(data.error) throw new Error(data.error.message);
+    const reply = data?.content?.find(b=>b.type==="text")?.text;
+    if(!reply) throw new Error("vazio");
+    const notas2 = carregarNotas();
+    const idx2 = notas2.findIndex(x => x.id === id);
+    if(idx2 !== -1){ notas2[idx2].resposta = reply; }
+    localStorage.setItem("florzinha_diario", JSON.stringify(notas2));
+    setState({loading:false, tela:"diario"});
+  })
+  .catch(e => {
+    console.error(e);
+    setState({loading:false, tela:"diario"});
+  });
+}
+
+function deletarNota(id){
+  try {
+    const notas = carregarNotas().filter(function(n){ return n.id !== id; });
+    localStorage.setItem("florzinha_diario", JSON.stringify(notas));
+    render();
+  } catch(e){ console.error("Erro deletar:", e); }
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────────────────
+function flores(cor="#c2845a"){
+  const itens = ["🌸","🌸","🌸","🌼","🌸","🌸","🌼","🌸","🌸","🌼"];
+  const tops  = [5, 12, 30, 22, 45, 58, 65, 78, 88, 94];
+  const lefts = [6, 85, 92, 18, 4, 88, 55, 10, 78, 35];
+  const sizes = [26, 32, 22, 30, 34, 24, 30, 26, 22, 28];
+  const opacs = [0.35, 0.30, 0.28, 0.32, 0.38, 0.30, 0.32, 0.35, 0.28, 0.30];
+  return `<div class="flores">${itens.map((f,i)=>`
+    <span class="flor" style="font-size:${sizes[i]}px;top:${tops[i]}%;left:${lefts[i]}%;color:${cor};opacity:${opacs[i]};animation-duration:${4+i*.7}s;animation-delay:${i*.6}s">${f}</span>`).join("")}</div>`;
+}
+
+function navbar(){
+  const t = tema();
+  const telas = ["inicio","modulos","diario","historico"];
+  const items = [
+    {icon:"🌼", lbl:"Início",    fn:"reiniciar()"},
+    {icon:"🌸", lbl:"Módulos",   fn:"setState({tela:'modulos'})"},
+    {icon:"🩷", lbl:"Diário",    fn:"setState({tela:'diario'})"},
+    {icon:"🍀", lbl:"Histórico", fn:"setState({tela:'historico'})"},
+  ];
+  return `<nav class="navbar">${items.map((n,i)=>`
+    <button class="navbtn ${state.tela===telas[i]?"ativo":""}" onclick="${n.fn}">
+      <span class="icon">${n.icon}</span>
+      <span class="lbl" style="color:${state.tela===telas[i]?t.cor:"#888"}">${n.lbl}</span>
+    </button>`).join("")}</nav>`;
+}
+
+function render(){
+  const app = document.getElementById("app");
+  const t = tema();
+
+  // ESCOLHER TEMPERAMENTO
+  if(state.escolhendoTemp){
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;padding-bottom:90px">
+      ${flores()}
+      <div class="fu" style="position:relative;z-index:1;padding:56px 24px 0">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:44px;margin-bottom:12px">🌷</div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#5c3d2e;line-height:1.2;margin-bottom:20px">Seu Temperamento<br>Revela Seu Propósito</h2>
+          <input id="inp-nome-mod" class="input-nome" placeholder="Meu nome é..." value="${state.nome !== 'florzinha' ? state.nome : ''}"
+            oninput="state.nome = this.value.trim() || 'florzinha'"
+            style="margin-bottom:20px"/>
+        </div>
+        <div class="tempgrid">
+          ${Object.entries(TEMAS).map(([key,t])=>`
+          <button class="tempcard" onclick="
+            const v = document.getElementById('inp-nome-mod').value.trim();
+            if(v) state.nome = capitalize(v);
+            escolherTempParaModulo('${key}')">
+            <span style="font-size:34px">${t.emoji}</span>
+            <p style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:${t.corTexto}">${t.nome}</p>
+            <p style="font-family:'Nunito',sans-serif;font-size:11px;color:#888;text-align:center">${t.apelido}</p>
+          </button>`).join("")}
+        </div>
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // DIÁRIO
+  if(state.tela==="diario"){
+    const notas = carregarNotas();
+    const t = tema();
+    const n = state.nome || "florzinha";
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;padding-bottom:100px">
+      ${flores()}
+      <div class="fu" style="position:relative;z-index:1;padding:52px 22px 0">
+        <div style="text-align:center;margin-bottom:24px">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#5c3d2e;margin-bottom:4px">Meu Diário</h2>
+          <p style="font-family:'Nunito',sans-serif;font-size:12px;color:#9e7060;font-style:italic">Um cantinho só seu — desabafe, reflita, floresça</p>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+          <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#9e7060;margin-bottom:10px;font-style:italic">Como está seu coração hoje, ${n}?</p>
+          <textarea id="nova-nota"
+            placeholder="Pode contar tudo aqui... alegrias, dores, dúvidas, segredos. Ninguém mais vai ler."
+            style="width:100%;min-height:120px;border:none;outline:none;resize:none;
+              font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;
+              line-height:1.75;background:transparent;"></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <button onclick="
+              const txt=document.getElementById('nova-nota').value;
+              if(txt.trim()){salvarNotaComResposta(txt);}
+            " style="border:none;border-radius:50px;padding:10px 24px;
+              background:linear-gradient(135deg,#c2846a,#a0522d);color:white;
+              font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
+              Enviar
+            </button>
+          </div>
+        </div>
+
+        ${notas.length === 0 ? `
+          <div style="text-align:center;padding:32px 0;opacity:0.5">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#9e7060;font-style:italic">Suas anotações aparecem aqui.</p>
+          </div>
+        ` : notas.map(nota=>`
+          <div class="card" style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <p style="font-family:'Nunito',sans-serif;font-size:10px;color:#bbb">
+                ${new Date(nota.data).toLocaleDateString("pt-BR",{day:"numeric",month:"long",year:"numeric"})}
+              </p>
+              <button onclick="deletarNota(${nota.id})"
+                style="background:none;border:none;cursor:pointer;font-size:16px;opacity:0.4;color:#c0392b;padding:2px 6px"
+                title="Apagar nota">🗑️</button>
+            </div>
+            <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;white-space:pre-wrap;margin-bottom:${nota.resposta ? '14px' : '0'}">${nota.texto}</p>
+            ${nota.resposta ? `
+              <div style="border-top:1px solid rgba(160,82,45,0.1);padding-top:12px;margin-top:4px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <div style="width:24px;height:24px;border-radius:50%;background:#f0e0d0;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">🌷</div>
+                  <p style="font-family:'Nunito',sans-serif;font-size:11px;color:#b8906a;font-weight:600">Florzinha respondeu</p>
+                </div>
+                <div style="font-family:'Nunito',sans-serif;font-size:14px;color:#5c3d2e;line-height:1.75">
+                  ${nota.resposta === "..." ?
+                    `<p style="color:#bbb;font-style:italic">Florzinha está escrevendo... 🌸</p>` :
+                    mdToHtml(nota.resposta)
+                  }
+                </div>
+              </div>
+            ` : ""}
+          </div>
+        `).join("")}
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // O QUE É TEMPERAMENTO
+  if(state.tela==="oque"){
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;padding-bottom:100px">
+      ${flores()}
+      <div class="fu" style="position:relative;z-index:1;padding:52px 24px 0">
+
+        <button onclick="setState({tela:'inicio'})" style="background:none;border:none;cursor:pointer;font-size:22px;color:#a0522d;margin-bottom:20px;display:block">←</button>
+
+        <div style="text-align:center;margin-bottom:28px">
+          <h1 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:#5c3d2e;line-height:1.2;margin-bottom:6px">O que é Temperamento?</h1>
+          <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#b8906a;font-style:italic">Entenda antes de descobrir o seu</p>
+        </div>
+
+        <!-- Parte 1 -->
+        <div class="card" style="margin-bottom:16px">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:19px;color:#5c3d2e;line-height:1.6;margin-bottom:16px;font-style:italic">Você já percebeu como algumas pessoas reagem com intensidade, enquanto outras parecem viver em silêncio interno?</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:10px">Por que alguns têm facilidade em fazer amigos, enquanto outros preferem a solitude?</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:10px">Por que você se cobra tanto? Ou talvez… por que começa tudo com entusiasmo, mas não termina?</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:14px">A resposta está mais próxima do que você imagina: <strong>seu temperamento.</strong></p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75">Deus te criou com uma estrutura emocional única, e isso não é um erro — é um projeto. Mas aqui está algo poderoso: você não foi feita para ser refém do seu temperamento. Você foi feita para refletir a imagem de Cristo. E sim… isso é possível.</p>
+        </div>
+
+        <!-- Parte 2 -->
+        <div class="card" style="margin-bottom:16px">
+          <p style="font-family:'Nunito',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b8906a;margin-bottom:16px">Temperamento, Personalidade e Caráter</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:14px">Muita gente confunde essas três palavras. Mas elas são coisas completamente diferentes — e entender isso muda tudo.</p>
+
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#5c3d2e;margin-bottom:4px">Temperamento</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:14px">É o que você nasceu sendo. É biológico, inato, não muda. É a forma como seu sistema nervoso responde ao mundo — velocidade, intensidade, como você processa emoções. É o ponto de partida de tudo.</p>
+
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#5c3d2e;margin-bottom:4px">Personalidade</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:14px">É o temperamento moldado pela experiência. É o resultado do temperamento + criação + cultura + relacionamentos + traumas + curas. Duas pessoas com o mesmo temperamento podem ter personalidades bem diferentes dependendo do que viveram.</p>
+
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#5c3d2e;margin-bottom:4px">Caráter</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:18px">É o que você escolhe ser. É a parte ética e moral — honestidade, integridade, como você age quando ninguém está vendo. O caráter pode ser desenvolvido independente do temperamento.</p>
+
+          <div style="background:linear-gradient(135deg,rgba(194,132,106,0.12),rgba(160,82,45,0.08));border-radius:14px;padding:18px;border-left:3px solid #c2846a">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#5c3d2e;line-height:1.6;font-style:italic;text-align:center">"O temperamento é o que Deus te deu.<br>A personalidade é o que a vida moldou.<br>O caráter é o que você escolhe."</p>
+          </div>
+        </div>
+
+        <!-- Parte 3 -->
+        <div class="card" style="margin-bottom:16px">
+          <p style="font-family:'Nunito',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b8906a;margin-bottom:16px">Você tem apenas um temperamento</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:14px">Cada pessoa tem apenas <strong>UM temperamento</strong>. Diferente do que muitos acreditam, não nascemos com misturas de dois ou mais. O que pode acontecer é que, ao longo da vida, vamos sendo moldados por experiências, educação, fé, cura interior e amadurecimento — e isso pode equilibrar ou suavizar certos traços.</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.75;margin-bottom:18px">Mas a raiz, a base da sua forma de ser… é uma só.</p>
+
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#5c3d2e;margin-bottom:12px">Quando você entende seu temperamento, você:</p>
+          ${["Para de lutar contra si mesma","Descobre qual é o seu ponto de vulnerabilidade emocional","Aprende onde mais precisa da ação do Espírito Santo","Entende como Deus deseja usar seu jeito natural para um propósito eterno"].map(i=>`
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+            <span style="color:#c2846a;font-size:16px;flex-shrink:0;margin-top:1px">•</span>
+            <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.65">${i}</p>
+          </div>`).join("")}
+        </div>
+
+        <!-- Parte 4 - Importante -->
+        <div class="card" style="margin-bottom:24px">
+          <p style="font-family:'Nunito',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b8906a;margin-bottom:16px">Importante lembrar</p>
+          ${["Seu temperamento é um dom de Deus. Mas sem maturidade espiritual, ele pode te dominar em vez de te conduzir ao seu propósito.","Seu temperamento não define sua identidade. Só Cristo pode fazer isso.","Você não está presa ao seu temperamento — você pode amadurecer, crescer e ser transformada sem perder sua essência."].map(i=>`
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
+            <span style="color:#c2846a;font-size:16px;flex-shrink:0;margin-top:1px">•</span>
+            <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#4a2c1a;line-height:1.65">${i}</p>
+          </div>`).join("")}
+          <p style="font-family:'Cormorant Garamond',serif;font-size:17px;color:#5c3d2e;line-height:1.6;font-style:italic;margin-top:8px">Deus não errou ao te criar com esse temperamento. Mas Ele te chama para não ser dominada por ele — e sim cheia do Espírito.</p>
+        </div>
+
+        <!-- Encerramento -->
+        <div style="background:linear-gradient(135deg,rgba(194,132,106,0.12),rgba(160,82,45,0.08));border-radius:18px;padding:24px;margin-bottom:24px;text-align:center">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:19px;color:#5c3d2e;line-height:1.6;font-style:italic;margin-bottom:12px">Este é mais do que um app. É uma jornada de reencontro. Entre você, Deus… e o temperamento que Ele mesmo lhe deu.</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#9e7060;line-height:1.7">Então respira fundo, abre seu coração e vem comigo nessa jornada.<br><strong>A transformação já começou.</strong></p>
+        </div>
+
+        <button class="btn" onclick="setState({tela:'boas-vindas'})"
+          style="background:linear-gradient(135deg,#c2846a,#a0522d);color:white;
+            box-shadow:0 8px 22px rgba(160,82,45,0.25);padding:18px">
+          Quero descobrir meu temperamento
+        </button>
+
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // HISTÓRICO
+  if(state.tela==="historico"){
+    const hist = carregarHistorico();
+    const t = tema();
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;padding-bottom:100px">
+      ${flores()}
+      <div class="fu" style="position:relative;z-index:1;padding:52px 22px 0">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:36px;margin-bottom:8px">🍀</div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#5c3d2e;margin-bottom:6px">Seus Relacionamentos</h2>
+          <p style="font-family:'Nunito',sans-serif;font-size:12px;color:#9e7060;font-style:italic">Conversas salvas automaticamente</p>
+        </div>
+        ${hist.length === 0 ? `
+          <div class="card" style="text-align:center;padding:32px">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#9e7060;font-style:italic">Nenhuma conversa salva ainda.</p>
+            <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#bbb;margin-top:8px">Suas conversas do módulo "Como me Relacionar" aparecem aqui.</p>
+          </div>
+        ` : hist.map((h,i)=>`
+          <div style="width:100%;background:rgba(255,255,255,0.8);border-radius:16px;padding:16px 18px;margin-bottom:11px;border:1.5px solid rgba(255,255,255,0.94);display:flex;align-items:center;gap:14px">
+            <button onclick="retomar(${i})" style="display:flex;align-items:center;gap:14px;flex:1;background:none;border:none;cursor:pointer;text-align:left;min-width:0">
+              <div style="width:42px;height:42px;border-radius:12px;background:#f0e0d0;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍀</div>
+              <div style="flex:1;min-width:0">
+                <p style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:#5c3d2e;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.resumo || "Conversa sobre relacionamentos"}</p>
+                <p style="font-family:'Nunito',sans-serif;font-size:11px;color:#aaa">${new Date(h.data).toLocaleDateString("pt-BR")} · ${TEMAS[h.temperamento]?.nome || ""}</p>
+              </div>
+              <span style="color:#a0522d;opacity:.4;font-size:18px;flex-shrink:0">›</span>
+            </button>
+            <button onclick="deletarConversa(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;opacity:0.45;padding:4px;flex-shrink:0">🗑️</button>
+          </div>`).join("")}
+        ${hist.length > 0 ? `
+          <button onclick="limparHistorico()" class="btn" style="background:none;color:#ddd;font-size:12px;margin-top:8px">Limpar histórico</button>
+        ` : ""}
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+  if(state.tela==="inicio"){
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;display:flex;flex-direction:column;padding-bottom:80px">
+      ${flores()}
+      <div class="fu" style="position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;padding:50px 28px 0;text-align:center">
+
+        <!-- Topo: nome e tagline -->
+        <div style="margin-bottom:28px">
+          <p style="font-family:'Nunito',sans-serif;font-size:10px;letter-spacing:4px;color:#9e7060;text-transform:uppercase;margin-bottom:12px">bem-vinda</p>
+          <h1 style="font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:400;color:#3d2314;line-height:1;margin-bottom:10px">Florzinha</h1>
+          <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#9e7060;margin-bottom:0;font-style:italic;letter-spacing:0.3px">Se conhecer é florescer.</p>
+        </div>
+
+        <!-- Card citação + temperamentos -->
+        <div class="card" style="margin-bottom:32px">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#3d2314;line-height:1.6;font-style:italic;text-align:center;margin-bottom:20px">"Você foi criada única.<br>Seu temperamento é o jeito<br>que Deus escolheu te fazer."</p>
+          <div style="display:flex;justify-content:center;gap:18px">
+            ${[["🌙","Melancólico"],["🌸","Sanguíneo"],["🔥","Colérico"],["🕊️","Fleumático"]].map(([em,nm])=>`
+            <div style="text-align:center">
+              <div style="font-size:24px;margin-bottom:5px">${em}</div>
+              <p style="font-family:'Nunito',sans-serif;font-size:10px;color:#7a4f38;letter-spacing:0.3px;font-weight:600">${nm}</p>
+            </div>`).join("")}
+          </div>
+        </div>
+
+        <!-- Dois caminhos -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+
+          <!-- O que é Temperamento -->
+          <button class="btn" onclick="setState({tela:'oque'})"
+            style="background:rgba(255,255,255,0.75);color:#5c3d2e;
+              border:1.5px solid rgba(160,82,45,0.2);padding:18px;margin-bottom:0;
+              backdrop-filter:blur(8px)">
+            <div style="font-size:15px;font-weight:700;margin-bottom:3px">O que é Temperamento?</div>
+            <div style="font-size:11px;opacity:0.7;font-weight:400;color:#9e7060">Entenda antes de descobrir o seu</div>
+          </button>
+
+          <!-- Caminho 1: Descobrir temperamento -->
+          <button class="btn" onclick="setState({tela:'boas-vindas'})"
+            style="background:linear-gradient(135deg,#c2846a,#a0522d);color:white;
+              box-shadow:0 8px 22px rgba(160,82,45,0.25);padding:18px;margin-bottom:0">
+            <div style="font-size:15px;font-weight:700;margin-bottom:3px">Quero descobrir meu temperamento</div>
+            <div style="font-size:11px;opacity:0.85;font-weight:400">Responda ao quiz e conheça quem você é</div>
+          </button>
+
+          <!-- Caminho 2: Já sei meu temperamento -->
+          <button class="btn" onclick="setState({tela:'modulos'})"
+            style="background:rgba(255,255,255,0.75);color:#5c3d2e;
+              border:1.5px solid rgba(160,82,45,0.2);padding:18px;margin-bottom:0;
+              backdrop-filter:blur(8px)">
+            <div style="font-size:15px;font-weight:700;margin-bottom:3px">Já sei meu temperamento</div>
+            <div style="font-size:11px;opacity:0.7;font-weight:400;color:#9e7060">Acesse os módulos diretamente</div>
+          </button>
+
+        </div>
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // BOAS-VINDAS
+  if(state.tela==="boas-vindas"){
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;padding-bottom:90px">
+      ${flores()}
+      <div class="fu" style="position:relative;z-index:1;padding:58px 26px;display:flex;flex-direction:column;min-height:100vh;justify-content:center">
+        <div style="text-align:center;margin-bottom:26px">
+          <div style="font-size:52px;margin-bottom:14px">🌸</div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:#5c3d2e;line-height:1.2;margin-bottom:20px">Olá, florzinha!<br>Que alegria ter você aqui.</h2>
+          <div class="card" style="text-align:left;margin-bottom:22px">
+            <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#5c3d2e;line-height:1.7;margin-bottom:10px">Estou aqui para te ajudar a se conhecer de um jeito profundo, amoroso e cheio de fé.</p>
+            <p style="font-family:'Nunito',sans-serif;font-size:14px;color:#5c3d2e;line-height:1.7">Vamos caminhar juntas, com calma e sem pressa. Não existe resposta certa ou errada — só a sua verdade.</p>
+          </div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#7a4f38;font-style:italic;margin-bottom:22px">Preparada para florescer?<br>Me conta: qual é o seu nome?</p>
+        </div>
+        <input id="inp-nome" class="input-nome" placeholder="Meu nome é..." value="${state.nome}" oninput="state.nome=this.value" onkeydown="if(event.key==='Enter'&&this.value.trim()){setState({nome:capitalize(this.value.trim()),tela:'quiz'})}"/>
+        <button class="btn" onclick="if(document.getElementById('inp-nome').value.trim()){setState({nome:capitalize(document.getElementById('inp-nome').value.trim()),tela:'quiz'})}" style="background:linear-gradient(135deg,#c2846a,#a0522d);color:white;box-shadow:0 8px 20px rgba(160,82,45,0.25)">Continuar →</button>
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // QUIZ
+  if(state.tela==="quiz"){
+    const perg = PERGUNTAS[state.quizStep];
+    const prog = ((state.quizStep+1)/PERGUNTAS.length)*100;
+    const icons = ["🌙","🌸","🔥","🕊️"];
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:linear-gradient(160deg,#fdf6ef,#f5e6d3,#ede0d4);position:relative;padding-bottom:90px">
+      ${flores()}
+      <div style="position:relative;z-index:1;padding:52px 22px 30px">
+        <button onclick="reiniciar()" style="background:none;border:none;cursor:pointer;font-size:22px;color:#a0522d;margin-bottom:18px;display:block">←</button>
+        <p style="font-family:'Nunito',sans-serif;font-size:11px;letter-spacing:2px;color:#9e7060;text-transform:uppercase;margin-bottom:6px">${state.nome} · ${state.quizStep+1} de ${PERGUNTAS.length}</p>
+        <div class="prog-bar"><div class="prog-fill" style="width:${prog}%"></div></div>
+        <div class="fu">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:400;color:#4a2c1a;line-height:1.45;margin-bottom:22px">${perg.q}</h2>
+          ${perg.ops.map((op,i)=>`
+          <button class="qop" onclick="escolherQuiz('${op.k}')">
+            <span style="opacity:.45;font-size:16px;flex-shrink:0">${icons[i]}</span>${op.t}
+          </button>`).join("")}
+        </div>
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // RESULTADO
+  if(state.tela==="resultado"){
+    if(!state.tempKey || !TEMAS[state.tempKey]){ setState({tela:"inicio"}); return; }
+    const tk = TEMAS[state.tempKey];
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:${tk.bg};position:relative;padding-bottom:100px">
+      ${flores(tk.cor)}
+      <div class="fu" style="position:relative;z-index:1;padding:56px 24px 0;text-align:center">
+        <p style="font-family:'Nunito',sans-serif;font-size:11px;letter-spacing:2.5px;color:${tk.corTexto};text-transform:uppercase;margin-bottom:8px;opacity:.75">${state.nome}, você é</p>
+        <div style="font-size:64px;margin-bottom:10px;filter:drop-shadow(0 4px 12px ${tk.cor}44)">${tk.emoji}</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;color:${tk.corTexto};margin-bottom:4px">${tk.nome}</h1>
+        <p style="font-family:'Nunito',sans-serif;font-size:13px;color:${tk.corTexto};opacity:.8;margin-bottom:22px;font-style:italic">${tk.apelido}</p>
+        <div class="card" style="margin-bottom:14px;text-align:left">
+          <p style="font-family:'Nunito',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${tk.corTexto};opacity:.7;margin-bottom:10px">📖 Versículo do seu temperamento</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:#3a2820;line-height:1.6;margin-bottom:8px">"${tk.versiculo.texto}"</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:12px;color:${tk.corTexto};text-align:right">— ${tk.versiculo.ref}</p>
+        </div>
+        <div class="card" style="margin-bottom:14px;text-align:left">
+          <div style="display:flex;gap:14px">
+            <div style="flex:1">
+              <p style="font-family:'Nunito',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:${tk.corTexto};opacity:.7;margin-bottom:8px">✨ Seus dons</p>
+              ${tk.dons.map(d=>`<p style="font-family:'Nunito',sans-serif;font-size:12px;color:#3a2820;margin-bottom:5px;line-height:1.4">• ${d}</p>`).join("")}
+            </div>
+            <div style="width:1px;background:${tk.corClara};flex-shrink:0"></div>
+            <div style="flex:1">
+              <p style="font-family:'Nunito',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:${tk.corTexto};opacity:.7;margin-bottom:8px">🤍 Seus desafios</p>
+              ${tk.desafios.map(d=>`<p style="font-family:'Nunito',sans-serif;font-size:12px;color:#3a2820;margin-bottom:5px;line-height:1.4">• ${d}</p>`).join("")}
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:17px;color:${tk.corTexto};font-style:italic;margin-bottom:20px;opacity:.9">"Deus não errou ao te criar assim. ${tk.emoji}"</p>
+        <button class="btn" onclick="setState({tela:'modulos'})" style="background:${tk.cor};color:white;box-shadow:0 8px 22px ${tk.cor}55">Continuar minha jornada ${tk.emoji}</button>
+        <button class="btn" onclick="reiniciar()" style="border:1.5px solid ${tk.corClara};background:rgba(255,255,255,0.5);color:${tk.corTexto};font-size:14px">Refazer o quiz</button>
+      </div>
+      ${navbar()}
+    </div>`;
+    return;
+  }
+
+  // MÓDULOS
+  if(state.tela==="modulos"){
+    app.innerHTML = `
+    <div style="width:100%;min-height:100vh;background:${t.bg};position:relative;padding-bottom:100px">
+      ${flores(t.cor)}
+      <div class="fu" style="position:relative;z-index:1;padding:52px 22px 0">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:38px;margin-bottom:8px">${state.tempKey ? t.emoji : "🌼"}</div>
+          ${state.tempKey ? `
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:${t.corTexto};margin-bottom:6px">${state.nome?state.nome+", p":"P"}or onde quer continuar?</h2>
+          <p style="font-family:'Nunito',sans-serif;font-size:12px;color:${t.corTexto};opacity:.7;font-style:italic;margin-bottom:4px">temperamento: <strong>${t.nome}</strong></p>
+          <button onclick="setState({tempKey:null})" style="background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:11px;color:${t.corTexto};opacity:.5;text-decoration:underline;margin-bottom:16px">Trocar temperamento</button>
+          ` : `
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#5c3d2e;margin-bottom:16px">Escolha um módulo</h2>
+          `}
+        </div>
+        ${MODULOS.map(mod=>`
+        <button class="modcard" onclick="handleModulo(${JSON.stringify(mod).replace(/"/g,"'")})">
+          <div style="width:46px;height:46px;border-radius:13px;background:${t.corClara};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${mod.emoji}</div>
+          <div style="flex:1">
+            <p style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:${t.corTexto};margin-bottom:3px">${mod.label}</p>
+            <p style="font-family:'Nunito',sans-serif;font-size:12px;color:#666;line-height:1.4">${mod.desc}</p>
+          </div>
+          <span style="color:${t.corTexto};opacity:.35;font-size:20px;flex-shrink:0">›</span>
+        </button>`).join("")}
+        ${!state.tempKey?`<button class="btn" onclick="setState({tela:'boas-vindas'})" style="background:linear-gradient(135deg,#c2846a,#a0522d);color:white;margin-top:8px;box-shadow:0 6px 18px rgba(160,82,45,0.25)">Descobrir pelo quiz 🌸</button>`:""}
+      </div>
+      ${navbar()}
+    </div>`;
+
+    // fix onclick para modcards (JSON com objetos)
+    document.querySelectorAll(".modcard").forEach((btn,i)=>{
+      btn.onclick = ()=>handleModulo(MODULOS[i]);
+    });
+    return;
+  }
+
+  // CHAT
+  if(state.tela==="chat"){
+    if(!state.tempKey || !TEMAS[state.tempKey]){ setState({tela:"modulos"}); return; }
+    const tk = TEMAS[state.tempKey];
+    app.innerHTML = `
+    <div class="chat-wrap" style="background:${tk.bg}">
+      <div style="padding:50px 18px 13px;display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.72);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.88);flex-shrink:0">
+        <button onclick="setState({tela:'modulos'})" style="background:none;border:none;cursor:pointer;font-size:20px;color:${tk.corTexto};padding:0 4px">←</button>
+        <div style="width:36px;height:36px;border-radius:50%;background:${tk.corClara};display:flex;align-items:center;justify-content:center;font-size:18px">${tk.emoji}</div>
+        <div>
+          <p style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:${tk.corTexto}">Florzinha</p>
+          <p style="font-family:'Nunito',sans-serif;font-size:11px;color:#888">${state.modulo?.label||""}</p>
+        </div>
+      </div>
+      <div id="chat-msgs" class="chat-msgs">
+        ${state.msgs.map(m=>`
+        <div class="msg-row ${m.role==="user"?"user":"bot"}">
+          ${m.role==="assistant"?`<div class="msg-avatar" style="background:${tk.corClara}">🌷</div>`:""}
+          <div class="msg-bubble ${m.role==="user"?"user":"bot"}" style="${m.role==="user"?`background:${tk.cor}`:""}">
+            ${m.role==="assistant"?mdToHtml(m.content):`<p style="margin:0">${m.content}</p>`}
+          </div>
+        </div>`).join("")}
+        ${state.loading?`
+        <div class="msg-row bot">
+          <div class="msg-avatar" style="background:${tk.corClara}">🌷</div>
+          <div class="msg-bubble bot"><span class="typing">escrevendo</span></div>
+        </div>`:""}
+      </div>
+      <div class="chat-input-wrap">
+        <input id="chat-inp" class="chat-input" style="border:1.5px solid ${tk.corClara}" placeholder="Escreva para a Flor..." value="${state.input.replace(/"/g,'&quot;')}"
+          oninput="state.input=this.value"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){enviar()}"/>
+        <button class="send-btn" onclick="enviar()" style="background:${state.input.trim()&&!state.loading?tk.cor:'#ccc'}">→</button>
+      </div>
+    </div>`;
+
+    // scroll to bottom
+    const msgs = document.getElementById("chat-msgs");
+    if(msgs) msgs.scrollTop = msgs.scrollHeight;
+    // focus input
+    const inp = document.getElementById("chat-inp");
+    if(inp) inp.focus();
+    return;
+  }
+}
+
+render();
+</script>
+</body>
+</html>
